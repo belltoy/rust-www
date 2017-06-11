@@ -533,13 +533,12 @@ One thing to note is that currently Rust doesn't offer generics over arrays of d
 如何实现包含循环的图或其他数据结构？
 </a></h3>
 
-There are at least four options (discussed at length in [Too Many Linked Lists](http://cglab.ca/~abeinges/blah/too-many-lists/book/)):
+至少有四种选择（在 [Too Many Linked Lists](http://cglab.ca/~abeinges/blah/too-many-lists/book/) 里有详细的讨论）：
 
-- 您可以使用 [`Rc`][Rc] 和 [`Weak`][Weak] 来允许节点共享所有权以实现它。虽然这种方法要支付内存管理的成本。
-- You can implement it using `unsafe` code using raw pointers. This will be
-more efficient, but bypasses Rust's safety guarantees.
-- Using vectors and indices into those vectors. There are [several](http://smallcultfollowing.com/babysteps/blog/2015/04/06/modeling-graphs-in-rust-using-vector-indices/) [available](https://featherweightmusings.blogspot.com/2015/04/graphs-in-rust.html) examples and explanations of this approach.
-- Using borrowed references with [`UnsafeCell`][UnsafeCell]. There are [explanations and code](https://github.com/nrc/r4cppp/blob/master/graphs/README.md#node-and-unsafecell) available for this approach.
+- 你可以使用 [`Rc`][Rc] 和 [`Weak`][Weak] 来实现，以允许节点共享所有权以实现它。然而这种方法要付出内存管理的成本。
+- 你可以通过使用包含裸指针的 `unsafe` 代码来实现。这会更高效，但绕过了 Rust 的安全保障机制。
+- 在这些向量中使用向量和索引。有[几种](http://smallcultfollowing.com/babysteps/blog/2015/04/06/modeling-graphs-in-rust-using-vector-indices/)[可用](https://featherweightmusings.blogspot.com/2015/04/graphs-in-rust.html)的例子和这种方法的解释。
+- 使用借用的引用和 [`UnsafeCell`][UnsafeCell]。这种方法有[解释和代码](https://github.com/nrc/r4cppp/blob/master/graphs/README.md#node-and-unsafecell)。
 
 <h3><a href="#how-can-i-define-a-struct-that-contains-a-reference-to-one-of-its-own-fields" name="how-can-i-define-a-struct-that-contains-a-reference-to-one-of-its-own-fields">
 我该如何定义一个包含对其自身字段之一引用的结构体？
@@ -569,7 +568,7 @@ fn main() {
 按值传递，消费，移动和转让所有权之间有什么区别？
 </a></h3>
 
-These are different terms for the same thing. In all cases, it means the value has been moved to another owner, and moved out of the possession of the original owner, who can no longer use it. If a type implements the `Copy` trait, the original owner's value won't be invalidated, and can still be used.
+它们是同一个东西的不同术语。所有的情况下，这意味着该值已经从原始所有者移动到另一个所有者，原始所有者不能再使用它。如果一个类型实现了 `Copy` trait，原始所有者的值不会无效，仍然可以使用。
 
 <h3><a href="#why-can-values-of-some-types-by-reused-while-others-are-consumed" name="why-can-values-of-some-types-by-reused-while-others-are-consumed">
 为什么某些类型的值在传递到一个函数后可以使用，而另一些类型的值传递后使用会导致错误？
@@ -620,7 +619,7 @@ If you find yourself struggling with the borrow checker, or running out of patie
 <code>Rc</code> 在什么时候有用？
 </a></h3>
 
-This is covered in the official documentation for [`Rc`][Rc], Rust's non-atomically reference-counted pointer type. In short, [`Rc`][Rc] and its thread-safe cousin [`Arc`][Arc] are useful to express shared ownership, and have the system automatically deallocate the associated memory when no one has access to it.
+Rust 的非原子引用计数指针类型，在官方文档中涵盖了 [`Rc`][Rc] 的描述。简而言之，[`Rc`][Rc] 和它的线程安全版本 [`Arc`][Arc] 在表示共享所有权的时候是有用的，当没有人拥有它的访问权限的时候，系统会自动释放相应的内存。
 
 <h3><a href="#how-do-i-return-a-closure-from-a-function" name="how-do-i-return-a-closure-from-a-function">
 如何从函数返回一个闭包？
@@ -730,7 +729,7 @@ The only way to construct a value of type `&Foo` or `&mut Foo` is to specify an 
 如果没有 <code>null</code>，我该怎么表达缺失值？
 </a></h3>
 
-You can do that with the [`Option`][Option] type, which can either be `Some(T)` or `None`. `Some(T)` indicates that a value of type `T` is contained within, while `None` indicates the absence of a value.
+你可以使用 [`Option`][Option] 类型，可以是 `Some(T)` 或者是 `None`。`Some(T)` 表示其包含类型为 `T` 的值，而 `None` 则表示没有值。
 
 <h2 id="generics">泛型</h2>
 
@@ -785,7 +784,7 @@ Associated types exist because generics often involve families of types, where o
 我可以重载运算符吗？哪些可以，怎么做？
 </a></h3>
 
-You can provide custom implementations for a variety of operators using their associated traits: [`Add`][Add] for `+`, [`Mul`][Mul] for `*`, and so on. It looks like this:
+你可以通过实现相应的 trait 来为多种操作符提供自定义的实现：[`Add`][Add] 对应于 `+`，[`Mul`][Mul] 对应于 `*`，等等。类似这样：
 
 ```rust
 use std::ops::Add;
@@ -801,7 +800,7 @@ impl Add for Foo {
 }
 ```
 
-The following operators can be overloaded:
+以下的操作符可以被重载：
 
 | Operation            | Trait                          |
 |:---------------------|:-------------------------------|
@@ -847,7 +846,7 @@ As explained in [the earlier question on floats](#why-cant-i-compare-floats), th
 如何将文件读入一个 <code>String</code>？
 </a></h3>
 
-Using the [`read_to_string()`][read__read_to_string] method, which is defined on the [`Read`][Read] trait in [`std::io`][std-io].
+使用 [`read_to_string()`][read__read_to_string] 方法，它定义在 [`std::io`][std-io] 的 [`Read`][Read] trait 中。
 
 ```rust
 use std::io::Read;
@@ -872,23 +871,23 @@ fn main() {
 如何有效地读取文件输入？
 </a></h3>
 
-The [`File`][File] type implements the [`Read`][Read] trait, which has a variety of functions for reading and writing data, including [`read()`][read__read], [`read_to_end()`][read__read_to_end], [`bytes()`][read__bytes], [`chars()`][read__chars], and [`take()`][read__take]. Each of these functions reads a certain amount of input from a given file. [`read()`][read__read] reads as much input as the underlying system will provide in a single call. [`read_to_end()`][read__read_to_end] reads the entire buffer into a vector, allocating as much space as is needed. [`bytes()`][read__bytes] and [`chars()`][read__chars] allow you to iterate over the bytes and characters of the file, respectively. Finally, [`take()`][read__take] allows you to read up to an arbitrary number of bytes from the file. Collectively, these should allow you to efficiently read in any data you need.
+[`File`][File] 类型实现了 [`Read`][Read] trait，它具有读写数据的各种函数，包括[`read()`][read__read]，[`read_to_end()`][read__read_to_end]，[`bytes()`][read__bytes]，[`chars()`][read__chars]，和 [`take()`][read__take]。这些函数中每个都从给定的文件中读取一定量的输入。[`read()`][read__read] 在单次调用中读取与底层系统一样多的输入。[`bytes_to_end()`][read__read_to_end] 将整个缓冲区读进一个向量，分配所需的空间。[`bytes()`][read__bytes] 和 [`chars()`][read__chars] 可以分别对文件的字节和字符进行迭代。最后，[`take()`][read__take] 允许你从文件中读取任意数量的字节。总而言之，这些都允许你有效地读取所需的任何数据。
 
-For buffered reads, use the [`BufReader`][BufReader] struct, which helps to reduce the number of system calls when reading.
+对于缓冲区的读取，使用 [`BufReader`][BufReader] 结构体，有助于读取时减少系统调用的次数。
 
 <h3><a href="#how-do-i-do-asynchronous-input-output-in-rust" name="how-do-i-do-asynchronous-input-output-in-rust">
 Rust 中如何进行异步输入 / 输出？
 </a></h3>
 
-There are several libraries providing asynchronous input / output in Rust, including [mioco](https://github.com/dpc/mioco), [coio-rs](https://github.com/zonyitoo/coio-rs), and [rotor](https://github.com/tailhook/rotor).
+有几个 Rust 的库提供了异步输入 / 输出，包括 [mio](https://github.com/carllerche/mio)，[tokio](https://github.com/tokio-rs/tokio-core)，[mioco](https://github.com/dpc/mioco)，[coio-rs](https://github.com/zonyitoo/coio-rs) 和 [rotor](https://github.com/tailhook/rotor)。
 
 <h3><a href="#how-do-i-get-command-line-arguments" name="how-do-i-get-command-line-arguments">
 如何在 Rust 中获取命令行参数？
 </a></h3>
 
-The easiest way is to use [`Args`][Args], which provides an iterator over the input arguments.
+最简单的方法是使用 [`Args`][Args]，它为输入参数提供了迭代器。
 
-If you're looking for something more powerful, there are a [number of options on crates.io](https://crates.io/keywords/argument).
+如果你正在寻找一些更强大的工具，那么[在 crate.io 上有很多选择](https://crates.io/keywords/argument)。
 
 <h2 id="error-handling">错误处理</h2>
 
@@ -1000,7 +999,7 @@ Rust 有许多开发环境可供选择，详见官方的 [IDE 支持页面](http
 Rust 是否保证特定的数据布局？
 </a></h3>
 
-默认不会。在一般情况下，`enum` 和 `struct` 布局是未定义的。这允许编译器进行潜在优化，例如重新使用 padding for the discriminant, compacting variants of nested `enum`s, reordering fields to remove padding, etc. `enums` which carry no data ("C-like") are eligible to have a defined representation. Such `enums` are easily distinguished in that they are simply a list of names that carry no data:
+默认不会。在一般情况下，`enum` 和 `struct` 布局是未定义的。这允许编译器进行潜在优化，如根据差别式重新对齐，压缩嵌套的 `enum`，重排字段以消除填充，等。不带数据的 `enum` （类 C）符合按定义表示的条件。这样的 `enum` 很容易区分，因为它们只是一个不包含数据的名字列表：
 
 ```rust
 enum CLike {
@@ -1011,7 +1010,7 @@ enum CLike {
 }
 ```
 
-`#[repr(C)]` 属性可以应用到诸如 `enums` 以提供等同 C 语言中的表示。This allows using Rust `enum`s in FFI code where C `enum`s are also used, for most use cases. The attribute can also be applied to `struct`s to get the same layout as a C `struct` would.
+`#[repr(C)]` 属性可以应用到诸如 `enums` 以提供等同 C 语言中的表示。对于大多数情况来说，这允许在 FFI 代码中使用 Rust 的 `enum` 和 C 的 `enum`。这个属性也可以应用到 `strut` 上，来获得与 C `struct` 相同的布局。
 
 <h2 id="cross-platform">跨平台</h2>
 
@@ -1068,11 +1067,11 @@ Rust 确实为每个受支持平台方法[标准库副本](https://static.rust-l
 为什么 Rust 编译器找不到我 <code>use</code> 的库？
 </a></h3>
 
-There are a number of possible answers, but a common mistake is not realizing that `use` declarations are relative to the crate root. Try rewriting your declarations to use the paths they would use if defined in the root file of your project and see if that fixes the problem.
+可能有多种原因，但一个常见的错误是没有意识到 `use` 声明是相对于包装箱的根层级。如果在项目的根文件中定义，请尝试重写声明以使用它们要使用的路径，并查看是否可以解决问题。
 
-There are also `self` and `super`, which disambiguate `use` paths as being relative to the current module or parent module, respectively.
+还有 `self` 和 `super`，它们分别使用相对于当前模块或者父模块的路径。
 
-For complete information on `use`ing libraries, read the Rust book's chapter ["Crates and Modules"](https://doc.rust-lang.org/stable/book/crates-and-modules.html).
+有关 `use` 库的完整信息，请阅读 Rust 之书的[「包装箱和模块」](https://doc.rust-lang.org/stable/book/crates-and-modules.html) 一章。
 
 <h3><a href="#why-do-i-have-to-declare-modules-with-mod" name="why-do-i-have-to-declare-modules-with-mod">
 为什么我必须在包装箱顶层用 <code>mod</code> 声明模块文件，而不能直接 <code>use</code> 它们？
@@ -1121,7 +1120,7 @@ pub fn f() {
 为什么编译器找不到方法实现，即使我已经 <code>use</code> 包装箱？
 </a></h3>
 
-For methods defined on a trait, you have to explicitly import the trait declaration. This means it's not enough to import a module where a struct implements the trait, you must also import the trait itself.
+对于在 trait 上定义的方法，必须显示导入 trait 的声明。这意味着导入一个实现了 trait 的 struct 模块是不够的，还必须导入这个 trait 本身。
 
 <h3><a href="#why-cant-the-compiler-infer-use-statements" name="why-cant-the-compiler-infer-use-statements">
 为什么编译器不能为我推断 <code>use</code> 声明？
@@ -1204,7 +1203,7 @@ Quoting the [official explanation](https://internals.rust-lang.org/t/crates-io-p
 如何用 Rust 编写 OpenGL 应用程序？
 </a></h3>
 
-[Glium](https://github.com/tomaka/glium) is the major library for OpenGL programming in Rust. [GLFW](https://github.com/bjz/glfw-rs) is also a solid option.
+[Glium](https://github.com/tomaka/glium) 是 Rust 中 OpenGL 编程的主要的库。[GLFW](https://github.com/bjz/glfw-rs) 也是一个可靠的选择。
 
 <h3><a href="#can-i-write-a-video-game-in-rust" name="can-i-write-a-video-game-in-rust">
 我能用 Rust 编写一个电子游戏吗？
@@ -1224,19 +1223,19 @@ Rust 是面向对象吗？
 如何将面向对象的概念映射到 Rust？
 </a></h3>
 
-看情况。将面向对象的概念转化到 Rust 有许多种 _方式_，例如 [多继承](https://www.reddit.com/r/rust/comments/2sryuw/ideaquestion_about_multiple_inheritence/)，但由于 Rust 不是面向对象的，所以转化的结果可能与 OO 语言看起来有很大的不同。
+看情况。将面向对象的概念转化到 Rust 有许多种 _方式_，例如[多继承](https://www.reddit.com/r/rust/comments/2sryuw/ideaquestion_about_multiple_inheritence/)，但由于 Rust 不是面向对象的，所以转化的结果可能与 OO 语言看起来有很大的不同。
 
 <h3><a href="#how-do-i-configure-a-struct-with-optional-parameters" name="how-do-i-configure-a-struct-with-optional-parameters">
 如何处理有可选参数的结构体的配置？
 </a></h3>
 
-The easiest way is to use the [`Option`][Option] type in whatever function you're using to construct instances of the struct (usually `new()`). Another way is to use the [builder pattern](https://aturon.github.io/ownership/builders.html), where only certain functions instantiating member variables must be called before the construction of the built type.
+最简单的方法是在你用来构造结构体实现的任何函数（ 通常是 `new`）中使用 [`Option`][Option] 类型。另一种方法是使用 [构造器模式](https://aturon.github.io/ownership/builders.html)，在构造类型之前，一些明确实例化成员变量的函数必须被调用。
 
 <h3><a href="#how-do-i-do-global-variables" name="how-do-i-do-global-variables">
 如何在 Rust 中做全局对象？
 </a></h3>
 
-Rust 中可以用 `const` 声明在编译时计算的全局常量，而 `static` 可用于可变的全局变量。请注意，修改一个 `static mut` 变量需要使用 `unsafe`，因为它允许数据竞争（races）， one of the things guaranteed not to happen in safe Rust. `const` 与 `static` 值的一项重要区别是，你可以引用 `static` 值，但不能引用 `const` 值，因为它没有一个特定的内存位置。有关 `const` 与 `static` 的更多信息，请阅读 [Rust 之书](https://doc.rust-lang.org/book/const-and-static.html)。
+Rust 中可以用 `const` 声明在编译时计算的全局常量，而 `static` 可用于可变的全局变量。请注意，修改一个 `static mut` 变量需要使用 `unsafe`，因为它允许数据竞争（races），这在安全的 Rust 中保证不会发生的事之一。`const` 与 `static` 值的一项重要区别是，你可以引用 `static` 值，但不能引用 `const` 值，因为它没有一个特定的内存位置。有关 `const` 与 `static` 的更多信息，请阅读 [Rust 之书](https://doc.rust-lang.org/book/const-and-static.html)。
 
 <h3><a href="#how-can-i-set-compile-time-constants-that-are-defined-procedurally" name="how-can-i-set-compile-time-constants-that-are-defined-procedurally">
 如何设置程序定义的编译时的常量？
@@ -1244,7 +1243,7 @@ Rust 中可以用 `const` 声明在编译时计算的全局常量，而 `static`
 
 Rust 目前对编译时常量的支持有限。您可以使用 `const` 声明（类似 `static`，但它不可变，并且在内存中没有特定位置）定义原始类型，以及定义 `const` 函数和固有方法。
 
-To define procedural constants that can't be defined via these mechanisms, use the [`lazy-static`](https://github.com/rust-lang-nursery/lazy-static.rs) crate, which emulates compile-time evaluation by automatically evaluating the constant at first use.
+要定义那些无法通过这种机制定义的过程常量，使用 [`lazy-static`](https://github.com/rust-lang-nursery/lazy-static.rs) crate，它通过第一次使用的时候自动求值来模拟编译时求值。
 
 <h3><a href="#can-i-run-code-before-main" name="can-i-run-code-before-main">
 我可以在 main 发生前运行初始化代码吗？
@@ -1274,9 +1273,9 @@ Rust has consistently worked to avoid having features with overlapping purposes,
 Rust 是否允许全局的非常量表达式值？
 </a></h3>
 
-No. Globals cannot have a non-constant-expression constructor and cannot have a destructor at all. Static constructors are undesirable because portably ensuring a static initialization order is difficult. Life before main is often considered a misfeature, so Rust does not allow it.
+不允许。全局不能有一个非常量表达式的构造器和解构器。静态构造器也不允许，因为确保一个静态初始化顺序很难。main 之前的生命周期经常被认为是不当的功能，所以 Rust 不允许。
 
-See the [C++ FQA](http://yosefk.com/c++fqa/ctors.html#fqa-10.12) about the "static initialization order fiasco", and [Eric Lippert's blog](https://ericlippert.com/2013/02/06/static-constructors-part-one/) for the challenges in C#, which also has this feature.
+参考 [C++ FQA](http://yosefk.com/c++fqa/ctors.html#fqa-10.12) 中关于「static initialization order fiasco」的问题，以及 [Eric Lippert's blog](https://ericlippert.com/2013/02/06/static-constructors-part-one/) 中针对 C# 中此功能的挑战。
 
 您可以以 [lazy-static](https://crates.io/crates/lazy_static/) 包装箱使用近似的非常量表达式全局对象。
 
@@ -1292,9 +1291,9 @@ See the [C++ FQA](http://yosefk.com/c++fqa/ctors.html#fqa-10.12) about the "stat
 如何将 C 风格的枚举转换为整数，反之亦然？
 </a></h3>
 
-Converting a C-style enum to an integer can be done with an `as` expression, like `e as i64` (where `e` is some enum).
+把 C 风格的枚举转换成一个整型，可以通过 `as` 表达式，如 `e as i64`（这里 `e` 是某个枚举）。
 
-Converting in the other direction can be done with a `match` statement, which maps different numeric values to different potential values for the enum.
+反方向转换，可以通过 `match` 语句，将不同的数值映射到枚举的不同潜在值。
 
 <h3><a href="#why-do-rust-programs-use-more-memory-than-c" name="why-do-rust-programs-use-more-memory-than-c">
 为什么 Rust 程序使用比 C 更多的内存？
@@ -1414,15 +1413,15 @@ Rust 代码能调用 C 代码吗？
 C 代码能调用 Rust 代码吗？
 </a></h3>
 
-可以。The Rust code has to be exposed via an `extern` declaration, which makes it C-ABI compatible. Such a function can be passed to C code as a function pointer or, if given the `#[no_mangle]` attribute to disable symbol mangling, can be called directly from C code.
+可以。 Rust 代码必须通过一个 `extern` 声明来导出，这和 C-ABI 兼容。这样的函数可以作为函数指针传递给 C 代码，或者通过标识 `#[no_mangle]` 来禁用符号调整（symbol mangling），可以直接从 C 代码中调用。
 
 <h3><a href="#why-rust-vs-cxx" name="why-rust-vs-cxx">
 我已经写了完美的 C++。 Rust 能给我什么？
 </a></h3>
 
-Modern C++ includes many features that make writing safe and correct code less error-prone, but it's not perfect, and it's still easy to introduce unsafety. This is something the C++ core developers are working to overcome, but C++ is limited by a long history that predates a lot of the ideas they are now trying to implement.
+现代 C++ 包含了许多功能，使得写出安全且正确的代码更不容易出错，但并不完美，仍然很容易引入不安全。这是 C++ 核心开发人员正在努力解决的问题，但他们现在正想尝试实现的许多想法被 C++ 被之前悠久的历史包袱限制住了。
 
-Rust was designed from day one to be a safe systems programming language, which means it's not limited by historic design decisions that make getting safety right in C++ so complicated. In C++, safety is achieved by careful personal discipline, and is very easy to get wrong. In Rust, safety is the default. It gives you the ability to work in a team that includes people less perfect than you are, without having to spend your time double-checking their code for safety bugs.
+Rust 是从第一天开始就被设计成一种安全的系统编程语言，这意味着它不受限于那些让 C++ 变得如此复杂的历史设计决策。在 C++ 中，安全是通过谨慎的个人纪律来达到的，很容易出错。在 Rust 中，安全是默认的。即使你的团队中包含了不如你完美的人，你仍然能够工作，而无需花费时间仔细检查其代码的安全性漏洞。
 
 <h3><a href="#how-to-get-cxx-style-template-specialization" name="how-to-get-cxx-style-template-specialization">
 如何在 Rust 中做到相当于 C++ 模板特化？
@@ -1434,14 +1433,12 @@ Rust 目前还没有完全等同的模板特化，这[正在研究](https://gith
 Rust 的所有权系统如何与 C++ 中的 move 语义相关联？
 </a></h3>
 
-The underlying concepts are similar, but the two systems work very
-differently in practice. In both systems, "moving" a value is a way to
-transfer ownership of its underlying resources. For example, moving a
-string would transfer the string's buffer rather than copying it.
+基本概念是相似的，但两个系统在实践中的工作方式非常不同。在这两个系统中，
+「移动」一个值是转移其底层资源所有权的一种方式。例如，移动一个字符串，
+将传递这个字符串的缓冲区，而不是复制它。
 
-In Rust, ownership transfer is the default behavior. For example, if I
-write a function that takes a `String` as argument, this function will
-take ownership of the `String` value supplied by its caller:
+在Rust 中，所有权转移是默认的行为。例如，假设我写一个接收 `String`
+作为参数的函数，该函数将获得其调用者提供的这个 `String` 的所有权：
 
 ```rust
 fn process(s: String) { }
@@ -1453,21 +1450,16 @@ fn caller() {
 }
 ```
 
-As you can see in the snippet above, in the function `caller`, the
-first call to `process` transfers ownership of the variable `s`. The
-compiler tracks ownership, so the second call to `process` results in
-an error, because it is illegal to give away ownership of the same
-value twice. Rust will also prevent you from moving a value if there
-is an outstanding reference into that value.
+从上面的代码片断可以看出，在 `caller` 函数中，第一次调用 `process`
+转移了变量 `s` 的所有权。编译器跟踪所有权，所以第二次调用 `process`
+会导致错误，因为同一个值所有权被放弃两次是非法的。如果这个值被借出未归还，
+Rust 也会阻止你移动它。
 
-C++ takes a different approach. In C++, the default is to copy a value
-(to invoke the copy constructor, more specifically). However, callees
-can declare their arguments using an "rvalue reference", like
-`string&&`, to indicate that they will take ownership of some of the
-resources owned by that argument (in this case, the string's internal
-buffer). The caller then must either pass a temporary expression or
-make an explicit move using `std::move`. The rough equivalent to the
-function `process` above, then, would be:
+C++ 采用不同的方式。在 C++ 中，默认是复制一个值（更具体的是，调用拷贝
+构造器）。然而调用者可以使用一个 「rvalue 引用」来定义他们的参数，如
+`string&&`，表示它们将获得这些参数拥有的某些资源的所有权（在本例中为字符串的内部缓冲区）。
+然后调用者必须要么传递一个临时表达式或者使用 `std::move` 来显式移动。
+那么与上面的 `process` 函数大致相当的代码：
 
 ```
 void process(string&& s) { }
@@ -1479,13 +1471,10 @@ void caller() {
 }
 ```
 
-C++ 编译器 are not obligated to track moves. For example, the code
-above compiles without a warning or error, at least using the default
-settings on clang. Moreover, in C++ ownership of the string `s` itself
-(if not its internal buffer) remains with `caller`, and so the
-destructor for `s` will run when `caller` returns, even though it has
-been moved (in Rust, in contrast, moved values are dropped only by
-their new owners).
+C++ 编译器没有义务跟踪移动。例如，上面的代码在编译时没有警告或错误，
+至少在 clang 上使用默认设置的时候如此。此外，在 C++ 中字符串 `s`
+本身的所有权（假设不是它内部的缓冲区）还是在 `caller`，因此当 `caller`
+返回时解构器会运行，即使它被移动了（在 Rust 中则相反，被移动的值只会被它的新所有者丢弃）。
 
 <h3><a href="#how-to-interoperate-with-cxx" name="how-to-interoperate-with-cxx">
 如何让 Rust 与 C++ 互操作，反之亦然？
@@ -1497,7 +1486,7 @@ Rust 与 C++ 可以通过 C 互操作。Rust 和 C++ 都提供一个适用于 C 
 Rust 有 C++ 风格的构造器吗？
 </a></h3>
 
-没有。Functions serve the same purpose as constructors without adding language complexity. The usual name for the constructor-equivalent function in Rust is `new()`, although this is just a convention rather than a language rule. The `new()` function in fact is just like any other function. An example of it looks like so:
+没有。函数与构造器的目的相同，但不增加语言的复杂度。 Rust 中与构造器等效的函数名字通常是 `new()`，但这只是一个约定而不是一个语言规则。实际上 `new()` 函数与其它任何函数一样。如下例子所示：
 
 ```rust
 struct Foo {
@@ -1535,24 +1524,24 @@ Go 与 Rust 有何相似，及它们有什么不同？
 
 Rust 与 Go 有着完全不同的设计目标。下列差异不是全部的差异（它们太多而无法列出），而是较重要的一些：
 
-- Rust is lower level than Go. For example, Rust does not require a garbage collector, whereas Go does. In general, Rust affords a level of control that is comparable to C or C++.
-- Rust's focus is on ensuring safety and efficiency while also providing high-level affordances, while Go's is on being a small, simple language which compiles quickly and can work nicely with a variety of tools.
-- Rust has strong support for generics, which Go does not.
-- Rust has strong influences from the world of functional programming, including a type system which draws from Haskell's typeclasses. Go has a simpler type system, using interfaces for basic generic programming.
+- Rust 比 Go 处理更低的级别。例如 Rust 不需要垃圾收集，而 Go 需要。一般来说，Rust 提供了与 C 或 C++ 相当的控制级别。
+- Rust 专注于确保安全和高效，同时也提供了高级别的可用性，而 Go 则至力于成为一种简单易用的语言，可以快速编译，并可以使用各种工具进行良好的工作。
+- Rust 受到来自函数编译世界的强烈影响，包括从 Haskell 类型类中抽取出来的类型系统。Go 有一个简单的类型系统，使用接口进行基本的通用编译。
 
 <h3><a href="#how-do-rust-traits-compare-to-haskell-typeclasses" name="how-do-rust-traits-compare-to-haskell-typeclasses">
 Rust 的 trait 与 Haskell 类型类（typeclasses）相较如何？
 </a></h3>
 
-Rust traits are similar to Haskell typeclasses, but are currently not as powerful, as Rust cannot express higher-kinded types. Rust's associated types are equivalent to Haskell type families.
+Rust 的 trait 与 Haskell 的类型类相似，但目前并没有那么强大，因为 Rust 不能表示更高级的类型。
+Rust 的关联类型相当于 Haskell 的类型族（type families）。
 
-Some specific difference between Haskell typeclasses and Rust traits include:
+Haskell 的类型类和 Rust 的 trait 之前的一些具体区别包括：
 
-- Rust traits have an implicit first parameter called `Self`. `trait Bar` in Rust corresponds to `class Bar self` in Haskell, and `trait Bar<Foo>` in Rust corresponds to `class Bar foo self` in Haskell.
-- "Supertraits" or "superclass constraints" in Rust are written `trait Sub: Super`, compared to `class Super self => Sub self` in Haskell.
-- Rust forbids orphan instances, resulting in different coherence rules in Rust compared to Haskell.
-- Rust's `impl` resolution considers the relevant `where` clauses and trait bounds when deciding whether two `impl`s overlap, or choosing between potential `impl`s. Haskell only considers the constraints in the `instance` declaration, disregarding any constraints provided elsewhere.
-- A subset of Rust's traits (the ["object safe"](https://github.com/rust-lang/rfcs/blob/master/text/0255-object-safety.md) ones) can be used for dynamic dispatch via trait objects. The same feature is available in Haskell via GHC's `ExistentialQuantification`.
+- Rust 的 trait 有一个隐含的第一个参数 `Self`。Rust 中的 `trait Bar` 相当于 Haskell 中的 `class Bar self`，Rust 中的 `trait Bar<Foo>` 相当于 Haskell 中的 `class Bar foo self`。
+- Rust 中的「父 trait」或者「父类约束」写作 `trait Sub: Super`，与 Haskell 中的 `class Super self => Sub self` 区别。
+- Rust 禁止孤儿实例，导致与 Rust 与 Haskell 相比有不同的相关性规则。
+- Rust 的 `impl` 解决方案在决定两个 `impl` 是否重叠或者在潜在的 `impl` 之间进行选择时，会考虑相关的 `where` 子句和 trait 绑定。Haskell 仅考虑 `instance` 声明中的约束，则不考虑其它地方提供的约束。
+- Rust 中的 trait（[「对象安全」](https://github.com/rust-lang/rfcs/blob/master/text/0255-object-safety.md)）的一个子集可以通过 trait 对象用于动态调度。 Haskell 中则是通过 GHC 的`ExistentialQuantification` 来获得相同的功能。
 
 <h2 id="documentation">文档</h2>
 
