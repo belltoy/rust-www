@@ -125,7 +125,7 @@ TODO: Write this answer.
 为什么 Rust 随时间推移在大幅变化？
 </a></h3>
 
-Rust 起步的目标是创建一个安全且合用的系统编程语言。为了追求这个目标，它探索了很多想法，其中一些（生命周期、traits）被保留，而其他则被丢弃（类型体系系统、绿色线程）。 Also, in the run up to 1.0 a lot of the standard library was rewritten as early designs were updated to best use Rust's features and provide quality, consistent cross-platform APIs. 现在的 Rust 已达到了 1.0，语言保证为「稳定」（stable）；虽然它可能继续演变，但对于目前的 Rust 来说，代码在未来的发行版本上能继续工作。
+Rust 起步的目标是创建一个安全且合用的系统编程语言。为了追求这个目标，它探索了很多想法，其中一些（生命周期、traits）被保留，而其他则被丢弃（类型体系系统、绿色线程）。此外，由于早期的设计被升级以最好地使用 Rust 的特性，并提供高质量，一致的跨平台 API，在 1.0 之前，许多标准库被重写。现在的 Rust 已达到了 1.0，语言保证为「稳定」（stable）；虽然它可能继续演变，但运行于目前 Rust 上的代码，在未来的发行版本上应该能继续工作。
 
 <h3><a href="#how-does-rust-language-versioning-work" name="how-does-rust-language-versioning-work">
 Rust 语言的版本控制是怎样的？
@@ -135,13 +135,13 @@ Rust 的语言版本遵循 [SemVer](http://semver.org/)，如果更改修复了�
 
 Rust 维护三个「发行频道」：稳定版（stable）、测试版（beta）和每夜版（nightly）。稳定版和测试版每六周更新一次，而在那时的每夜版会变为新的测试版，测试版变为新的稳定版。标记为不稳定或者隐藏在特性门控后的语言和标准库特性只能在每夜版上使用，新特性定位为不稳定，一旦被核心团队和相关的子团队批准的话是「无门控的」，这种方法允许实验性变更，并同时为稳定频道提供强有力的向后兼容保证。
 
-就相关的其他详细信息，请阅读 Rust 博客 ["Stability as a Deliverable."](http://blog.rust-lang.org/2014/10/30/Stability.html)
+就相关的其他详细信息，请阅读 Rust 博客 [「Stability as a Deliverable」](http://blog.rust-lang.org/2014/10/30/Stability.html)。
 
 <h3><a href="#can-i-use-unstable-features-on-the-beta-or-stable-channel" name="can-i-use-unstable-features-on-the-beta-or-stable-channel">
 我可以在 Beta 或稳定频道上使用不稳定的功能吗？
 </a></h3>
 
-并不能。Rust努力保证测试版和每夜版的特性稳定性。当某些特性不稳定时，意味着我们还不能提供这种保证，不希望开发者依赖它。这给了我们在每夜版上适时尝试改变的机会，但是继续维护开发者寻求的稳定性。
+并不能。Rust 努力保证测试版和每夜版的特性稳定性。当某些特性不稳定时，意味着我们还不能提供这种保证，不希望开发者依赖它。这给了我们在每夜版上适时尝试改变的机会，但是继续维护开发者寻求的稳定性。
 
 测试和稳定版每六周更新一次是固定的，偶然有测试版的修正被及时接受，你不想使用每夜版而等待希望的某个特性的话，你可以通过检查 [`B-unstable`](https://github.com/rust-lang/rust/issues?q=is%3Aissue+is%3Aopen+tracking+label%3AB-unstable)标记跟踪尚存的问题。
 
@@ -150,7 +150,7 @@ Rust 维护三个「发行频道」：稳定版（stable）、测试版（beta�
 什么是「特性门控」（Feature Gates）？
 </a></h3>
 
-「特性门控」（Feature Gates）是 Rust 用来稳定编译器、语言和标准库特性的机制。 A feature that is "gated" is accessible only on the nightly release channel, and then only when it has been explicitly enabled through `#[feature]` attributes or the `-Z unstable-options` command line argument. When a feature is stabilized it becomes available on the stable release channel, and does not need to be explicitly enabled. At that point the feature is considered "ungated". Feature gates allow developers to test experimental features while they are under development, before they are available in the stable language.
+「特性门控」（Feature Gates）是 Rust 用来稳定编译器、语言和标准库特性的机制。一个「门控」的特性只能在每夜版才能使用，而且必须显式指定了 `#[feature]` 属性或者命令行参数 `-Z unstable-options`。当一个特性稳定了，它才能在稳定版上可用，不需要显式启用。此时，这个特性被认为是通过门控的（ungated）。特性门控允许开发者在稳定版提供之前，在开发中测试实验性的功能。
 
 <h3><a href="#why-a-dual-mit-asl2-license" name="why-a-dual-mit-asl2-license">
 为什么采用 MIT/ASL2 双许可证？
@@ -180,7 +180,7 @@ Rust 有多快？
 Rust 会垃圾收集吗？
 </a></h3>
 
-不。Rust 的重要创新之一就是保证内存安全（无 segfaults），*无需*垃圾收集。
+不会。Rust 的重要创新之一就是保证内存安全（无 segfaults），*无需*垃圾收集。
 
 通过避免垃圾收集（GC），Rust 可以提供许多益处：可预测的资源清理，降低内存管理开销，基本上没有运行时系统。这些特征使 Rust 很容易嵌入到任意上下文，并使其更容易[集成 Rust 代码到有 GC 的语言](http://calculist.org/blog/2015/12/23/neon-node-rust/)。
 
@@ -191,7 +191,7 @@ Rust 通过其所有权和借用（borrowing）系统避免了垃圾收集的需
 
 不过，我们也在调查*可选*的垃圾收集作为一项未来扩展。
 其目标旨在顺利与有垃圾收集的运行时整合，
-例如由 
+例如由
 [Spidermonkey](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey)
 和 [V8](https://developers.google.com/v8/?hl=en) JavaScript 引擎所提供的那些。
 最后，有人已调研了无编译器支持实现的
@@ -210,7 +210,7 @@ Rust 通过其所有权和借用（borrowing）系统避免了垃圾收集的需
 Rust 编译似乎很慢。这是为什么？
 </a></h3>
 
-代码转换和优化。Rust提供了高级抽象，它可以编译成高效的机器代码，而这些翻译需要时间来运行，特别是优化。
+代码转换和优化。Rust 提供了高级抽象，它可以编译成高效的机器代码，而这些翻译需要时间来运行，特别是优化。
 
 但 Rust 的编译时间并不像看起来那么糟糕，并有理由相信会有所改善。当比较 C++ 与 Rust 的类似大小的项目时，整个项目的编译时间一般被认为是可比的。Rust 编译缓慢的一般认识很大程度上是由于 C++ 与 Rust 的*编译模型*的差异：C++ 的编译单元是文件，而 Rust 则是包装箱，它由很多文件组成。因此，在开发过程中，修改单个 C++ 文件导致的重新编译比 Rust 更少。正在进行的重大工作将重构编译器来引入[增量编译](https://github.com/rust-lang/rfcs/blob/master/text/1298-incremental-compilation.md)，这将使 Rust 的编译时间变得比 C++ 的模型更有优势。
 
@@ -222,15 +222,15 @@ Rust 编译似乎很慢。这是为什么？
 
 第三，Rust 使用的 LLVM 代码生成是一把双刃剑：虽然它能够使 Rust 具有世界一流的运行时性能，但 LLVM 是一个不重视编译时性能的大型框架，特别是在使用较差输入质量时。
 
-最后，虽然 Rust 的单性泛型（ala C ++）的首选策略产生快速代码，但它需要比其他翻译策略产生更多的代码。Rust 程序员可以使用 trait 对象通过动态调度来抵消这个代码膨胀。
+最后，虽然 Rust 的单态（monomorphising）泛型（C ++  风格                                                          ）的首选策略产生快速代码，但它需要比其他翻译策略产生更多的代码。Rust 程序员可以使用 trait 对象通过动态调度来抵消这个代码膨胀。
 
 <h3><a href="#why-are-rusts-hashmaps-slow" name="why-are-rusts-hashmaps-slow">
 为什么 Rust 的 <code>HashMap</code> 很慢？
 </a></h3>
 
-默认情况下，Rust 的 [`HashMap`][HashMap] 使用 [SipHash](https://131002.net/siphash/) 哈希算法，which is designed to prevent [hash table collision attacks](http://programmingisterrible.com/post/40620375793/hash-table-denial-of-service-attacks-revisited) while providing [reasonable performance on a variety of workloads](https://www.reddit.com/r/rust/comments/3hw9zf/rust_hasher_comparisons/cub4oh6).
+默认情况下，Rust 的 [`HashMap`][HashMap] 使用 [SipHash](https://131002.net/siphash/) 哈希算法，其旨在防止[哈希表碰撞攻击](http://programmingisterrible.com/post/40620375793/hash-table-denial-of-service-attacks-revisited)，同时[在各种工作负载上提供合理的性能](https://www.reddit.com/r/rust/comments/3hw9zf/rust_hasher_comparisons/cub4oh6)。
 
-While SipHash [demonstrates competitive performance](http://cglab.ca/%7Eabeinges/blah/hash-rs/) in many cases, one case where it is notably slower than other hashing algorithms is with short keys, such as integers. This is why Rust programmers often observe slow performance with [`HashMap`][HashMap]. The [FNV hasher](https://crates.io/crates/fnv) is frequently recommended for these cases, but be aware that it does not have the same collision-resistance properties as SipHash.
+虽然 SipHash 在许多情况下[表现出竞争优势](http://cglab.ca/%7Eabeinges/blah/hash-rs/)，但其中一个比其它哈希算法要慢的情况是使用短键，例如整数。这就是为什么 Rust 程序员经常观察到 [`HashMap`][HashMap] 表现不佳的原因。在这些情况下，经常推荐 [FNV 哈希](https://crates.io/crates/fnv)，但请注意，它不具备与 SipHash 相同的防碰撞性。
 
 <h3><a href="#why-is-there-no-integrated-benchmarking" name="why-is-there-no-integrated-benchmarking">
 为什么没有集成的基准测试基础设施？
@@ -239,46 +239,46 @@ While SipHash [demonstrates competitive performance](http://cglab.ca/%7Eabeinges
 有，但它只在夜间发行频道上可用。我们最终计划为集成的基准建立一个可插拔系统，但同时，目前的系统[被认为是不稳定的](https://github.com/rust-lang/rust/issues/29553)。
 
 <h3><a href="#does-rust-do-tail-call-optimization" name="does-rust-do-tail-call-optimization">
-Rust 是否做尾呼优化？
+Rust 是否有做尾部调用优化？
 </a></h3>
 
-Not generally, no. Tail-call optimization may be done in [limited circumstances](http://llvm.org/docs/CodeGenerator.html#sibling-call-optimization), but is [not guaranteed](https://mail.mozilla.org/pipermail/rust-dev/2013-April/003557.html). As the feature has always been desired, Rust has a keyword (`become`) reserved, though it is not clear yet whether it is technically possible, nor whether it will be implemented. There was a [proposed extension](https://github.com/rust-lang/rfcs/pull/81) that would allow tail-call elimination in certain contexts, but it is currently postponed.
+一般来说，没有。尾部调用优化可能在[有限的情况](http://llvm.org/docs/CodeGenerator.html#sibling-call-optimization)下进行，但是[不能保证](https://mail.mozilla.org/pipermail/rust-dev/2013-April/003557.html)。由于该功能总归是需要的， Rust 保留了一个关键字（`become`），尽管目前还不清楚它在技术上是否可行，以及它是否会被实现。有一个[提议的扩展](https://github.com/rust-lang/rfcs/pull/81)，将允许在某些情况下消除尾部调用，但目前被推迟了。
 
 <h3><a href="#does-rust-have-a-runtime" name="does-rust-have-a-runtime">
 Rust 有运行时吗？
 </a></h3>
 
-Not in the typical sense used by languages such as Java, but parts of the Rust standard library can be considered a "runtime", providing a heap, backtraces, unwinding, and stack guards. There is a [small amount of initialization code](https://github.com/rust-lang/rust/blob/33916307780495fe311fe9c080b330d266f35bfb/src/libstd/rt.rs#L43) that runs before the user's `main` function. The Rust standard library additionally links to the C standard library, which does similar [runtime initialization](http://www.embecosm.com/appnotes/ean9/html/ch05s02.html). Rust code can be compiled without the standard library, in which case the runtime is roughly equivalent to C's.
+没有像 Java 语言这样典型意义上的运行时。但 Rust 标准库的一部分可以被认为是一个「运行时」，它提供了堆（heap），回溯（backtraces），展开（unwinding）和栈保护（stack guards）。在用户的 `main` 函数之前只运行[很少的初始化代码](https://github.com/rust-lang/rust/blob/33916307780495fe311fe9c080b330d266f35bfb/src/libstd/rt.rs#L43)。Rust 标准库还链接到 C 标准库，执行类似的[运行时初始化](http://www.embecosm.com/appnotes/ean9/html/ch05s02.html)。 Rsut 代码可以在没有标准库的情况下编译，在这种情况下，运行时大概相当于 C。
 
 <h2 id="syntax">语法</h2>
 
 <h3><a href="#why-curly-braces" name="why-curly-braces">
-Why curly braces? Why can't Rust's syntax be like Haskell's or Python's?
+为什么用花括号？为什么 Rust 的语法不能像 Haskell 或者 Python 那样？
 </a></h3>
 
-Use of curly braces to denote blocks is a common design choice in a variety of programming languages, and Rust's consistency is useful for people already familiar with the style.
+使用花括号表示块是各种编程语言中常见的设计选择，Rust 与此一致，对于那些已经熟悉这种风格的人员来说很有用。
 
-Curly braces also allow for more flexible syntax for the programmer and a simpler parser in the compiler.
+对程序员和编译器中的更简单的解析器来说，花括号允许更加灵活的语法。
 
 <h3><a href="#why-brackets-around-blocks" name="why-brackets-around-blocks">
-I can leave out parentheses on <code>if</code> conditions, so why do I have to put brackets around single line blocks? Why is the C style not allowed?
+我可以在 <code>if</code> 条件中省略括号，那为什么我还必须在单行块上面加括号？为什么不允许 C 的风格？
 </a></h3>
 
-Whereas C requires mandatory parentheses for `if`-statement conditionals but leaves brackets optional, Rust makes the opposite choice for its `if`-expressions. This keeps the conditional clearly separate from the body and avoids the hazard of optional brackets, which can lead to easy-to-miss errors during refactoring, like Apple's [goto fail](https://gotofail.com/) bug.
+鉴于 C 强制要求 `if` 条件语句加括号，但花括号可选。 Rust 在 `if` 表达式中作出了相反的选择。这使得条件明确地与主体分离，并避免了可选花括号可能导致的在重构时易漏的错误，就像 Apple 的 [goto 故障](https://gotofail.com/) bug。
 
 <h3><a href="#why-no-literal-syntax-for-dictionaries" name="why-no-literal-syntax-for-dictionaries">
-Why is there no literal syntax for dictionaries?
+为什么字典类型没有字面语法？
 </a></h3>
 
-Rust's overall design preference is for limiting the size of the *language* while enabling powerful *libraries*. While Rust does provide initialization syntax for arrays and string literals, these are the only collection types built into the language. Other library-defined types, including the ubiquitous [`Vec`][Vec] collection type, use macros for initialization like the [`vec!`][VecMacro] macro.
+Rust 的整体设计偏好是限制*语言*的大小，同时支持强大的*库*。Rust 确实为数组和字符串字面值提供了初始化语法，这些是该语言中仅有的内建集合类型。其它由库定义的类型，包括无处不在的 [`Vec`][Vec] 集合类型，使用像 [`vec!`][VecMacro] 类似的宏来进行初始化。
 
-This design choice of using Rust's macro facilities to initialize collections will likely be extended generically to other collections in the future, enabling simple initialization of not only [`HashMap`][HashMap] and [`Vec`][Vec], but also other collection types such as [`BTreeMap`][BTreeMap]. In the meantime, if you want a more convenient syntax for initializing collections, you can [create your own macro](https://stackoverflow.com/questions/27582739/how-do-i-create-a-hashmap-literal) to provide it.
+这种使用 Rust 宏机制来初始化集合的设计选择，在将来很可能会被普遍地扩展到其它集合类型，不仅可以简化 [`HashMap`][HashMap] 和 [`Vec`][Vec] 的初始化，还可以用于其它类型如 [`BTreeMap`][BTreeMap]。同时，如果你想要一个更加方便的语法来初始化集合，你可以通过[创建你自己的宏](https://stackoverflow.com/questions/27582739/how-do-i-create-a-hashmap-literal)来提供。
 
 <h3><a href="#when-should-i-use-an-implicit-return" name="when-should-i-use-an-implicit-return">
-我什么时候应该使用隐式 return？
+我什么时候应该使用隐式返回？
 </a></h3>
 
-Rust is a very expression-oriented language, and "implicit returns" are part of that design. Constructs like `if`s, `match`es, and normal blocks are all expressions in Rust. For example, the following code checks if an [`i64`][i64] is odd, returning the result by simply yielding it as a value:
+Rust 是一个非常面向表达式的语言，「隐式返回」是设计的一部分。 像 `if`，`match` 的结构和正常的块，在 Rust 中都是表达式。例如，以下代码检查一个 [`i64`][i64] 是否是奇数，通过简单地将将其作为值来返回结果：
 
 ```rust
 fn is_odd(x: i64) -> bool {
@@ -286,7 +286,7 @@ fn is_odd(x: i64) -> bool {
 }
 ```
 
-Although it can be simplified even further like so:
+然而，它还可以更进一步简化为：
 
 ```rust
 fn is_odd(x: i64) -> bool {
@@ -294,31 +294,31 @@ fn is_odd(x: i64) -> bool {
 }
 ```
 
-In each example, the last line of the function is the return value of that function. It is important to note that if a function ends in a semicolon, its return type will be `()`, indicating no returned value. Implicit returns must omit the semicolon to work.
+在每个示例中，函数的最后一行是该函数的返回值。重要的是要注意，如果一个函数以分号结尾，它的返回类型将是 `()` ，表示没有返回值。隐式返回必须省略分号才能起作用。
 
-Explicit returns are only used if an implicit return is impossible because you are returning before the end of the function's body. While each of the above functions could have been written with a `return` keyword and semicolon, doing so would be unnecessarily verbose, and inconsistent with the conventions of Rust code.
+只有在隐式返回不可用的时候才使用显示返回，因为你在函数体结尾之前返回。虽然上述每个函数都可以写成 `return` 关键字加上分号，但这样做是不必要的冗余，而且与 Rust 的惯例不一致。
 
 <h3><a href="#why-arent-function-signatures-inferred" name="why-arent-function-signatures-inferred">
-为什么不推断函数签名？
+为什么函数签名不作推导？
 </a></h3>
 
-在 Rust 中，声明倾向于使用显式类型，而实际代码则推断其类型。这种设计有几个原因：
+在 Rust 中，声明倾向于使用显式类型，而实际代码则用类型推导。这种设计有几个原因：
 
-- Mandatory declaration signatures help enforce interface stability at both the module and crate level.
-- Signatures improve code comprehension for the programmer, eliminating the need for an IDE running an inference algorithm across an entire crate to be able to guess at a function's argument types; it's always explicit and nearby.
-- Mechanically, it simplifies the inference algorithm, as inference only requires looking at one function at a time.
+- 强制性声明有助于在模块和包装箱级别上实现接口的稳定性。
+- 签名便于提高程序员对代码的理解，消除 IDE 在整个包装箱上运行类型推导算法来猜测一个函数参数类型的必要；它总是明确和就近的。
+- 实现上，它简化了类型推导算法，因为推导只需要一次查看一个函数。
 
 <h3><a href="#why-does-match-have-to-be-exhaustive" name="why-does-match-have-to-be-exhaustive">
-Why does <code>match</code> have to be exhaustive?
+为什么 <code>match</code> 必须是穷举的？
 </a></h3>
 
-To aid in refactoring and clarity.
+有助于重构和清晰。
 
-First, if every possibility is covered by the `match`, adding variants to the `enum` in the future will cause a compilation failure, rather than an error at runtime. This type of compiler assistance makes fearless refactoring possible in Rust.
+首先，如果 `match` 涵盖了所有的可能性，将来在 `enum` 中添加变量将导致编译失败，而不是运行时错误。这种类型的编译器辅助使得在 Rust 中大胆地重构成为可能。
 
-Second, exhaustive checking makes the semantics of the default case explicit: in general, the only safe way to have a non-exhaustive `match` would be to panic the thread if nothing is matched. Early versions of Rust did not require `match` cases to be exhaustive and it was found to be a great source of bugs.
+其次，穷举检查使得默认情况下的主义很明确：通常，在一个非穷举的 `match` 中如果没有匹配到任何项，唯一安全的做法是 panic 当前的线程。早期版本的 Rust 并不要求 `match` 项需要穷举，发现这是一个很大的 bug 的来源。
 
-It is easy to ignore all unspecified cases by using the `_` wildcard:
+使用通配符 `_` 可以很容易地忽略所有未指定的情况：
 
 ```rust
 match val.do_something() {
@@ -963,10 +963,10 @@ This error is usually caused by [`unwrap()`ing][unwrap] a `None` or `Err` in cli
 Rust 有许多开发环境可供选择，详见官方的 [IDE 支持页面](https://forge.rust-lang.org/ides.html)。
 
 <h3><a href="#wheres-rustfmt" name="wheres-rustfmt">
-<code>gofmt</code> is great. Where's <code>rustfmt</code>?
+<code>gofmt</code> 很棒。<code>rustfmt</code>在哪？
 </a></h3>
 
-`rustfmt` is [right here](https://github.com/rust-lang-nursery/rustfmt), and is being actively developed to make reading Rust code as easy and predictable as possible.
+`rustfmt` [就在这里](https://github.com/rust-lang-nursery/rustfmt)，正在活跃地开发中，以使得阅读 Rust 代码尽可能更容易和可预测。
 
 <h2 id="low-level">底层</h2>
 
@@ -1053,7 +1053,7 @@ Rust 的交叉编译是可能的，它但需要[一些流程](https://github.com
 
 Rust 确实为每个受支持平台方法[标准库副本](https://static.rust-lang.org/dist/index.html)，在分发目录上可以找到各构建目录，其中包含的 `rust-std-*` 文件就是它们，但尚没有自动安装它们的方法。
 
-<h2 id="modules-and-crates">模块和包装箱</h2>
+<h2 id="modules-and-crates">模块（module）和包装箱（crate）</h2>
 
 <h3><a href="#what-is-the-relationship-between-a-module-and-a-crate" name="what-is-the-relationship-between-a-module-and-a-crate">
 模块与包装箱之间的关系是什么？
@@ -1224,7 +1224,7 @@ Rust 是面向对象吗？
 如何将面向对象的概念映射到 Rust？
 </a></h3>
 
-That depends. There _are_ ways of translating object-oriented concepts like [multiple inheritance](https://www.reddit.com/r/rust/comments/2sryuw/ideaquestion_about_multiple_inheritence/) to Rust, but as Rust is not object-oriented the result of the translation may look substantially different from its appearance in an OO language.
+看情况。将面向对象的概念转化到 Rust 有许多种 _方式_，例如 [多继承](https://www.reddit.com/r/rust/comments/2sryuw/ideaquestion_about_multiple_inheritence/)，但由于 Rust 不是面向对象的，所以转化的结果可能与 OO 语言看起来有很大的不同。
 
 <h3><a href="#how-do-i-configure-a-struct-with-optional-parameters" name="how-do-i-configure-a-struct-with-optional-parameters">
 如何处理有可选参数的结构体的配置？
@@ -1521,13 +1521,13 @@ impl Foo {
 Rust 有复制构造函数吗？
 </a></h3>
 
-不太完全。Types which implement `Copy` will do a standard C-like "shallow copy" with no extra work (similar to "plain old data" in C++). It is impossible to implement `Copy` types that require custom copy behavior. Instead, in Rust "copy constructors" are created by implementing the `Clone` trait, and explicitly calling the `clone` method. Making user-defined copy operators explicit surfaces the underlying complexity, making it easier for the developer to identify potentially expensive operations.
+不完全是。实现了 `Copy` 的类型会执行标准的类 C 「浅拷贝」，无需额外的工作（类似于 C++ 中的 trivially copyable 类型）。要实现自定义复制行为的 `Copy` 类型是不可能的。作为替代的是，在 Rust 中，「复制构造函数」是通过实现 `Clone` trait 并显式调用 `clone` 方法来创建的。使用户定义的复制操作清晰地表达了底层的复杂性，使开发人员更加容易识别潜在的大开销操作。
 
 <h3><a href="#does-rust-have-move-constructors" name="does-rust-have-move-constructors">
 Rust 有移动构造函数吗？
 </a></h3>
 
-没有。Values of all types are moved via `memcpy`. This makes writing generic unsafe code much simpler since assignment, passing and returning are known to never have a side effect like unwinding.
+没有。所有类型的值都通过 `memcpy` 来移动。这使得编写通用的 unsafe 代码更加简单，因为分配，传递和返回都是已知的，不像展开（unwinding）那样具有副作用。
 
 <h3><a href="#compare-go-and-rust" name="compare-go-and-rust">
 Go 与 Rust 有何相似，及它们有什么不同？
@@ -1574,7 +1574,7 @@ Rust 语言已存在多年，而它在 2015 年 5 月才达成 1.0 版本。在�
 如何查看我的项目所依赖的库的 rustdoc 文档？
 </a></h3>
 
-When you use `cargo doc` to generate documentation for your own project, it also generates docs for the active dependency versions. These are put into the `target/doc` directory of your project. Use `cargo doc --open` to open the docs after building them, or just open up `target/doc/index.html` yourself.
+当你用 `cargo doc` 来为你的项目生成文档的时候，它也会生成当前依赖的库的版本的文档。这些文档被放在项目的 `target/doc` 目录中。在构建完之后，使用 `cargo doc --open` 来打开文档，或者你可以自己打开 `target/doc/index.html` 文件。
 
 [Vec]: https://doc.rust-lang.org/stable/std/vec/struct.Vec.html
 [HashMap]: https://doc.rust-lang.org/stable/std/collections/struct.HashMap.html
