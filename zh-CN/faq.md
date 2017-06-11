@@ -1,6 +1,6 @@
 ---
 layout: zh-CN/faq
-title: 常被问到的问题 &middot; Rust 程序设计语言
+title: 常被问到的问题 &middot; Rust 编程语言
 ---
 
 # 常被问到的问题
@@ -218,7 +218,7 @@ Rust 编译似乎很慢。这是为什么？
 
 首先，Rust 有中等复杂类型的系统，并且必须花费不可忽略的编译时间来强制在运行时使 Rust 安全的约束。
 
-其次，Rust 编译器遭受着长期的技术债务，特别是生成质量差的LLVM IR，而LLVM必须花时间「修复」。这有希望在未来[基于MIR](https://github.com/rust-lang/rfcs/blob/master/text/1211-mir.md)优化和转换传递来减轻 Rust 编译器在 LLVM 上的负担。
+其次，Rust 编译器遭受着长期的技术债务，特别是生成质量差的 LLVM IR，而 LLVM 必须花时间「修复」。这有希望在未来[基于 MIR](https://github.com/rust-lang/rfcs/blob/master/text/1211-mir.md) 优化和转换传递来减轻 Rust 编译器在 LLVM 上的负担。
 
 第三，Rust 使用的 LLVM 代码生成是一把双刃剑：虽然它能够使 Rust 具有世界一流的运行时性能，但 LLVM 是一个不重视编译时性能的大型框架，特别是在使用较差输入质量时。
 
@@ -270,7 +270,7 @@ Rust 有运行时吗？
 为什么字典类型没有字面语法？
 </a></h3>
 
-Rust 的整体设计偏好是限制*语言*的大小，同时支持强大的*库*。Rust 确实为数组和字符串字面值提供了初始化语法，这些是该语言中仅有的内建集合类型。其它由库定义的类型，包括无处不在的 [`Vec`][Vec] 集合类型，使用像 [`vec!`][VecMacro] 类似的宏来进行初始化。
+Rust 的整体设计偏好是限制*语言*的大小，同时支持强大的*库*。Rust 确实为数组和字符串字面值提供了初始化语法，这些是该语言中仅有的内建集合类型。其它由库定义的类型，包括无处不在的 [`Vec`][Vec] 集合类型，使用像 [`vec!`][VecMacro] 这样的宏来进行初始化。
 
 这种使用 Rust 宏机制来初始化集合的设计选择，在将来很可能会被普遍地扩展到其它集合类型，不仅可以简化 [`HashMap`][HashMap] 和 [`Vec`][Vec] 的初始化，还可以用于其它类型如 [`BTreeMap`][BTreeMap]。同时，如果你想要一个更加方便的语法来初始化集合，你可以通过[创建你自己的宏](https://stackoverflow.com/questions/27582739/how-do-i-create-a-hashmap-literal)来提供。
 
@@ -877,7 +877,7 @@ The [`File`][File] type implements the [`Read`][Read] trait, which has a variety
 For buffered reads, use the [`BufReader`][BufReader] struct, which helps to reduce the number of system calls when reading.
 
 <h3><a href="#how-do-i-do-asynchronous-input-output-in-rust" name="how-do-i-do-asynchronous-input-output-in-rust">
-Rust 中如何进行异步输入/输出？
+Rust 中如何进行异步输入 / 输出？
 </a></h3>
 
 There are several libraries providing asynchronous input / output in Rust, including [mioco](https://github.com/dpc/mioco), [coio-rs](https://github.com/zonyitoo/coio-rs), and [rotor](https://github.com/tailhook/rotor).
@@ -1242,7 +1242,7 @@ Rust 中可以用 `const` 声明在编译时计算的全局常量，而 `static`
 如何设置程序定义的编译时的常量？
 </a></h3>
 
-Rust 目前对编译时常量的支持有限。您可以使用 `const` 声明（类似 `static`，但它不可变，并且在内存中没有特定位置）定义原函数，以及定义 `const` 函数和固有方法。
+Rust 目前对编译时常量的支持有限。您可以使用 `const` 声明（类似 `static`，但它不可变，并且在内存中没有特定位置）定义原始类型，以及定义 `const` 函数和固有方法。
 
 To define procedural constants that can't be defined via these mechanisms, use the [`lazy-static`](https://github.com/rust-lang-nursery/lazy-static.rs) crate, which emulates compile-time evaluation by automatically evaluating the constant at first use.
 
@@ -1425,13 +1425,13 @@ Modern C++ includes many features that make writing safe and correct code less e
 Rust was designed from day one to be a safe systems programming language, which means it's not limited by historic design decisions that make getting safety right in C++ so complicated. In C++, safety is achieved by careful personal discipline, and is very easy to get wrong. In Rust, safety is the default. It gives you the ability to work in a team that includes people less perfect than you are, without having to spend your time double-checking their code for safety bugs.
 
 <h3><a href="#how-to-get-cxx-style-template-specialization" name="how-to-get-cxx-style-template-specialization">
-如何在 Rust 中做到 C++ 模板专业化 那样？
+如何在 Rust 中做到相当于 C++ 模板特化？
 </a></h3>
 
-Rust 目前还没有完全等同的模板专业化，这[正在研究](https://github.com/rust-lang/rfcs/pull/1210)并有希望尽快加入。不过，可以用[关联类型](https://doc.rust-lang.org/stable/book/associated-types.html)达成类似的效果。
+Rust 目前还没有完全等同的模板特化，这[正在研究](https://github.com/rust-lang/rfcs/pull/1210)并有希望尽快加入。不过，可以用[关联类型](https://doc.rust-lang.org/stable/book/associated-types.html)达成类似的效果。
 
 <h3><a href="#how-does-ownership-relate-to-cxx-move-semantics" name="how-does-ownership-relate-to-cxx-move-semantics">
-Rust 的所有权系统如何与 C++ 中的语义相关联？
+Rust 的所有权系统如何与 C++ 中的 move 语义相关联？
 </a></h3>
 
 The underlying concepts are similar, but the two systems work very
@@ -1494,7 +1494,7 @@ their new owners).
 Rust 与 C++ 可以通过 C 互操作。Rust 和 C++ 都提供一个适用于 C 的[外部函数接口](https://doc.rust-lang.org/book/ffi.html)，我们可以用它来相互沟通。如果编写 C 语言的绑定太麻烦，您随时可以用 [rust-bindgen](https://github.com/servo/rust-bindgen) 来帮忙自动生成可执行的 C 绑定。
 
 <h3><a href="#does-rust-have-cxx-style-constructors" name="does-rust-have-cxx-style-constructors">
-Rust 有 C++ 风格的构造函数吗？
+Rust 有 C++ 风格的构造器吗？
 </a></h3>
 
 没有。Functions serve the same purpose as constructors without adding language complexity. The usual name for the constructor-equivalent function in Rust is `new()`, although this is just a convention rather than a language rule. The `new()` function in fact is just like any other function. An example of it looks like so:
@@ -1518,13 +1518,13 @@ impl Foo {
 ```
 
 <h3><a href="#does-rust-have-copy-constructors" name="does-rust-have-copy-constructors">
-Rust 有复制构造函数吗？
+Rust 有复制构造器吗？
 </a></h3>
 
-不完全是。实现了 `Copy` 的类型会执行标准的类 C 「浅拷贝」，无需额外的工作（类似于 C++ 中的 trivially copyable 类型）。要实现自定义复制行为的 `Copy` 类型是不可能的。作为替代的是，在 Rust 中，「复制构造函数」是通过实现 `Clone` trait 并显式调用 `clone` 方法来创建的。使用户定义的复制操作清晰地表达了底层的复杂性，使开发人员更加容易识别潜在的大开销操作。
+不太完全。实现了 `Copy` 的类型会执行标准的类 C 「浅拷贝」，无需额外的工作（类似于 C++ 中的 trivially copyable 类型）。要实现自定义复制行为的 `Copy` 类型是不可能的。作为替代的是，在 Rust 中，「复制构造器」是通过实现 `Clone` trait 并显式调用 `clone` 方法来创建的。使用户定义的复制操作清晰地表达了底层的复杂性，使开发人员更加容易识别潜在的大开销操作。
 
 <h3><a href="#does-rust-have-move-constructors" name="does-rust-have-move-constructors">
-Rust 有移动构造函数吗？
+Rust 有移动构造器吗？
 </a></h3>
 
 没有。所有类型的值都通过 `memcpy` 来移动。这使得编写通用的 unsafe 代码更加简单，因为分配，传递和返回都是已知的，不像展开（unwinding）那样具有副作用。
@@ -1541,7 +1541,7 @@ Rust 与 Go 有着完全不同的设计目标。下列差异不是全部的差�
 - Rust has strong influences from the world of functional programming, including a type system which draws from Haskell's typeclasses. Go has a simpler type system, using interfaces for basic generic programming.
 
 <h3><a href="#how-do-rust-traits-compare-to-haskell-typeclasses" name="how-do-rust-traits-compare-to-haskell-typeclasses">
-Rust 特征与 Haskell 类型类相较如何？
+Rust 的 trait 与 Haskell 类型类（typeclasses）相较如何？
 </a></h3>
 
 Rust traits are similar to Haskell typeclasses, but are currently not as powerful, as Rust cannot express higher-kinded types. Rust's associated types are equivalent to Haskell type families.
