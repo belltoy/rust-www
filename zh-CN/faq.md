@@ -625,31 +625,33 @@ Rust 的非原子引用计数指针类型，在官方文档中涵盖了 [`Rc`][R
 如何从函数返回一个闭包？
 </a></h3>
 
-To return a closure from a function, it must be a "move closure", meaning that the closure is declared with the `move` keyword. As [explained in the Rust book](https://doc.rust-lang.org/book/closures.html#move-closures), this gives the closure its own copy of the captured variables, independent of its parent stack frame. Otherwise, returning a closure would be unsafe, as it would allow access to variables that are no longer valid; put another way: it would allow reading potentially invalid memory. The closure must also be wrapped in a [`Box`][Box], so that it is allocated on the heap. Read more about this [in the book](https://doc.rust-lang.org/book/closures.html#returning-closures).
+要从一个函数中返回闭包，这个闭包必须是一个「move 闭包」，意思是这个闭包是使用关键字 `move` 来定义的。正如
+[Rust 之书中的解释](https://doc.rust-lang.org/book/closures.html#move-closures)，这让这个闭包拥有了它所在环境里的变量的拷贝，独立于它的父级栈帧。另外，返回一个闭包会是不安全的，因为它会被允许访问那些失效的变量；换句话说，它会允许访问潜在的无效内存。返回的闭包也必须用 [`Box`][Box] 包装，这样它才会在堆上分配空间。[在这本书](https://doc.rust-lang.org/book/closures.html#returning-closures)里阅读更多相关的信息。
 
 <h3><a href="#what-are-deref-coercions" name="what-are-deref-coercions">
-什么是强制退还，它是如何工作？
+什么是强制解引（deref coercion），它是如何工作的？
 </a></h3>
 
-A [deref coercion](https://doc.rust-lang.org/book/deref-coercions.html) is a handy coercion
-that automatically converts references to pointers (e.g., `&Rc<T>` or `&Box<T>`) into references
-to their contents (e.g., `&T`). Deref coercions exist to make using Rust more ergonomic, and are implemented via the [`Deref`][Deref] trait.
+[强制解引](https://doc.rust-lang.org/book/deref-coercions.html)是自动将指向指针的引用（例如
+`&Rc<T>` 或者 `&Box<T>`）转换为指向内容的引用（例如 `&T`）这种强制转换的一种便捷方式。
+强制解引的存在让 Rust 更加符合人体工程学，它是通过 [`Deref`][Deref] trait 来实现的。
 
-A Deref implementation indicates that the implementing type may be converted into a target by a call to the `deref` method, which takes an immutable reference to the calling type and returns a reference (of the same lifetime) to the target type. The `*` prefix operator is shorthand for the `deref` method.
+一个 Deref 的实现表示该实现类型可以通过调用 `deref` 方法来转换成一个目标类型，该方法接受该调用类型的一个不可变引用，并返回一个指向目标的引用（相同的生命周期）。前缀操作符 `*` 是 `deref` 方法的缩写方式。
 
-They're called "coercions" because of the following rule, quoted here [from the Rust book](https://doc.rust-lang.org/stable/book/deref-coercions.html):
+之所以被称为「强制 coercions」是因为以下的规则，这里引用自 [Rust 之书](https://doc.rust-lang.org/stable/book/deref-coercions.html)：
 
-> If you have a type `U`, and it implements `Deref<Target=T>`, values of `&U` will automatically coerce to a `&T`.
+> 假设你有一个类型 `U`，并且它实现了 `Deref<Target=T>`，那么 `&U` 将会自动强制转换为 `&T`。
 
-For example, if you have a `&Rc<String>`, it will coerce via this rule into a `&String`, which then coerces to a `&str` in the same way. So if a function takes a `&str` parameter, you can pass in a `&Rc<String>` directly, with all coercions handled automatically via the `Deref` trait.
+例如，假设你有一个 `&Rc<String>`，它会被此规则强制转换为 `&String`，然后再被用同样的方式强制转换为 `&str`。
+那么对于一个接收 `&str` 参数的函数，你可以直接传入一个 `&Rc<String>`，所有的强制转换都通过 `Deref` trait 自动处理。
 
-The most common sorts of deref coercions are:
+以下是最常见的一些强制解引：
 
-- `&Rc<T>` to `&T`
-- `&Box<T>` to `&T`
-- `&Arc<T>` to `&T`
-- `&Vec<T>` to `&[T]`
-- `&String` to `&str`
+- `&Rc<T>` 到 `&T`
+- `&Box<T>` 到 `&T`
+- `&Arc<T>` 到 `&T`
+- `&Vec<T>` 到 `&[T]`
+- `&String` 到 `&str`
 
 <h2 id="lifetimes">生命周期</h2>
 
@@ -657,26 +659,25 @@ The most common sorts of deref coercions are:
 为什么有生命周期？
 </a></h3>
 
-Lifetimes are Rust's answer to the question of memory safety. They allow Rust to ensure memory safety without the performance costs of garbage collection. They are based on a variety of academic work, which can be found in the [Rust book](https://doc.rust-lang.org/stable/book/bibliography.html#type-system).
+生命周期是 Rust 以于内存安全问题的解答。它允许 Rust 确保内存安全，而无需付出垃圾收集的性能代价。这是基于多种学术成果的，这些参考文献可以从 [Rust 之书](https://doc.rust-lang.org/stable/book/bibliography.html#type-system) 中找到。
 
 <h3><a href="#why-is-the-lifetime-syntax-the-way-it-is" name="why-is-the-lifetime-syntax-the-way-it-is">
 为什么生命周期语法是这样的？
 </a></h3>
 
-The `'a` syntax comes from the ML family of programming languages, where `'a` is used to indicate a generic type parameter. For Rust, the syntax had to be something that was unambiguous, noticeable, and fit nicely in a type declaration right alongside traits and references. Alternative syntaxes have been discussed, but no alternative syntax has been demonstrated to be clearly better.
+`'a` 用于表示一个通用类型参数，这种语法来自于 ML 系列编程语言。对于 Rust 来说，这种语法必须是无歧义的，显而易见的，并且在类型声明中适合于与 trait 和引用放在一起。一些替代语法也被讨论过，但没有一种替代语法会表现得更好。
 
 <h3><a href="#how-do-i-return-a-borrow-to-something-i-created-from-a-function" name="how-do-i-return-a-borrow-to-something-i-created-from-a-function">
-如何将一个函数中创建的东西返回为借用？
+我该如何从一个函数中返回我创建的某个东西的借用？
 </a></h3>
 
-You need to ensure that the borrowed item will outlive the function. This can be done by binding the output lifetime to some input lifetime like so:
+你必须确保这个借用项的生命周期要比这个函数更长。将输出的生命周期和某些输入的生命周期绑定在一起，这样就可以做到，如下所示：
 
 ```rust
 type Pool = TypedArena<Thing>;
 
-// (the lifetime below is only written explicitly for
-// expository purposes; it can be omitted via the
-// elision rules described in a later FAQ entry)
+// （以下的生命周期只是为了说明而显式写出来；
+//  可以通过稍后 FAQ 条目中所描述的省略规则来省略它）
 fn create_borrowed<'a>(pool: &'a Pool,
                        x: i32,
                        y: i32) -> &'a Thing {
@@ -684,7 +685,7 @@ fn create_borrowed<'a>(pool: &'a Pool,
 }
 ```
 
-An alternative is to eliminate the references entirely by returning an owning type like [`String`][String]:
+另一个替代的方式是通过返回一个拥有的类型（owning type）来彻底消除引用，如 [`String`][String]：
 
 ```rust
 fn happy_birthday(name: &str, age: i64) -> String {
@@ -695,35 +696,25 @@ fn happy_birthday(name: &str, age: i64) -> String {
 这种方法更简单，但往往导致不必要的分配。
 
 <h3><a href="#when-are-lifetimes-required-to-be-explicit" name="when-are-lifetimes-required-to-be-explicit">
-为什么某些引用有生命周期，比如 <code>&amp;'a T</code>，而某些没有，比如 <code>&amp;T</code>？
+为什么有些引用有生命周期，如 <code>&amp;'a T</code>，而有些没有，如 <code>&amp;T</code>？
 </a></h3>
 
-In fact, *all* reference types have a lifetime, but most of the time you do not have to write
-it explicitly. The rules are as follows:
+实际上，*所有的*引用类型都有一个生命周期，但在大多数时候你无需将它显式写出来。规定如下：
 
-1. Within a function body, you never have to write a lifetime explicitly; the correct value
-   should always be inferred.
-2. Within a function *signature* (for example, in the types of its
-   arguments, or its return type), you *may* have to write a lifetime
-   explicitly. Lifetimes there use a simple defaulting scheme called
-   ["lifetime elision"](https://doc.rust-lang.org/book/lifetimes.html#lifetime-elision),
-   which consists of the following three rules:
-  - Each elided lifetime in a function’s arguments becomes a distinct lifetime parameter.
-  - If there is exactly one input lifetime, elided or not, that
-    lifetime is assigned to all elided lifetimes in the return values
-    of that function.
-  - If there are multiple input lifetimes, but one of them is &self
-    or &mut self, the lifetime of self is assigned to all elided
-    output lifetimes.
-3. Finally, in a `struct` or `enum` definition, all lifetimes must be explicitly declared.
+1. 在函数体内，你无需显式写出生命周期；正确的值总会被推导出来。
+2. 在函数*签名*中（例如，其参数类型或其返回值类型），你*可能*要显式写出生命周期。生命周期有一个简单的默认机制，称作[「生命周期省略（lifetime elision）」](https://doc.rust-lang.org/book/lifetimes.html#lifetime-elision)，其中包含了以下有三条规则：
+  - 函数的参数中，每个省略的生命周期都变成独立的生命周期参数。
+  - 如果只有一个输入的生命周期，无论省略与否，此生命周期将被赋给函数返回值中所有省略的生命周期。
+  - 如果有多个输入的生命周期，但其中一个是 &self 或者 &mut self，那这个 self 的生命周期将被赋给输出中所有省略的生命周期。
+3. 最后，在 `struct` 或者 `enum` 定义中，所有的生命周期都必须明确声明。
 
-If these rules result in compilation errors, the Rust compiler will provide an error message indicating the error caused, and suggesting a potential solution based on which step of the inference process caused the error.
+如果这些规则导致编译错误， Rust 编译器会给出一个错误信息，指出错误的原因，并根据推导过程中出错的步骤给出潜在的解决方案。
 
 <h3><a href="#how-can-rust-guarantee-no-null-pointers" name="how-can-rust-guarantee-no-null-pointers">
 Rust 如何保证「无空指针」和「无悬挂指针」？
 </a></h3>
 
-The only way to construct a value of type `&Foo` or `&mut Foo` is to specify an existing value of type `Foo` that the reference points to. The reference "borrows" the original value for a given region of code (the lifetime of the reference), and the value being borrowed from cannot be moved or destroyed for the duration of the borrow.
+构造一个类型为 `&Foo` 或者 `&mut Foo` 的值的唯一方式是指定该引用指向的类型 `Foo` 的一个已存在的值。该引用在给定的代码区域中（该引用的生命周期）「借用」了原始值，而被借用的值在借用期间无法被移动或者被销毁。
 
 <h3><a href="#how-do-i-express-the-absense-of-a-value-without-null" name="how-do-i-express-the-absense-of-a-value-without-null">
 如果没有 <code>null</code>，我该怎么表达缺失值？
