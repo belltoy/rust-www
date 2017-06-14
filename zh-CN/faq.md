@@ -68,7 +68,7 @@ Rust 作为一种备选方案，可以提供高效的代码和舒适的抽象级
 
 就[项目治理](https://github.com/rust-lang/rfcs/blob/master/text/1068-rust-governance.md)而言，
 Rust 由一个从全局角度出发，为项目设定愿景和优先事项的核心团队管理。
-我们还有小组指导和促进特定兴趣领域的发展，包括核心语言、编译器、Rust 库、Rust 工具和官方 Rust 社区的管理。这些领域中的设计都先进地经过一个[RFC 流程](https://github.com/rust-lang/rfcs)。对于不需要RFC的更改，决定是通过 [`rustc` 代码库](https://github.com/rust-lang/rust)上的拉取请求决定。
+我们还有小组指导和促进特定兴趣领域的发展，包括核心语言、编译器、Rust 库、Rust 工具和官方 Rust 社区的管理。这些领域中的设计都先进地经过一个 [RFC 流程](https://github.com/rust-lang/rfcs)。对于不需要 RFC 的更改，决定是通过 [`rustc` 代码库](https://github.com/rust-lang/rust)上的拉取请求决定。
 
 <h3><a href="#what-are-some-non-goals" name="what-are-some-non-goals">
 哪些不是 Rust 的目标？
@@ -125,7 +125,7 @@ TODO: Write this answer.
 为什么 Rust 随时间推移在大幅变化？
 </a></h3>
 
-Rust 起步的目标是创建一个安全且合用的系统编程语言。为了追求这个目标，它探索了很多想法，其中一些（生命周期、traits）被保留，而其他则被丢弃（类型体系系统、绿色线程）。此外，由于早期的设计被升级以最好地使用 Rust 的特性，并提供高质量，一致的跨平台 API，在 1.0 之前，许多标准库被重写。现在的 Rust 已达到了 1.0，语言保证为「稳定」（stable）；虽然它可能继续演变，但运行于目前 Rust 上的代码，在未来的发行版本上应该能继续工作。
+Rust 起步的目标是创建一个安全且合用的系统编程语言。为了追求这个目标，它探索了很多想法，其中一些（生命周期、trait）被保留，而其他则被丢弃（类型体系系统、绿色线程）。此外，由于早期的设计被升级以最好地使用 Rust 的特性，并提供高质量，一致的跨平台 API，在 2.0 之前，许多标准库被重写。现在的 Rust 已达到了 1.0，语言保证为「稳定」（stable）；虽然它可能继续演变，但运行于目前 Rust 上的代码，在未来的发行版本上应该能继续工作。
 
 <h3><a href="#how-does-rust-language-versioning-work" name="how-does-rust-language-versioning-work">
 Rust 语言的版本控制是怎样的？
@@ -634,7 +634,7 @@ Rust 的非原子引用计数指针类型，在官方文档中涵盖了 [`Rc`][R
 
 [强制解引](https://doc.rust-lang.org/book/deref-coercions.html)是自动将指向指针的引用（例如
 `&Rc<T>` 或者 `&Box<T>`）转换为指向内容的引用（例如 `&T`）这种强制转换的一种便捷方式。
-强制解引的存在让 Rust 更加符合人体工程学，它是通过 [`Deref`][Deref] trait 来实现的。
+强制解引的存在使得 Rust 更加符合人体工程学，它是通过 [`Deref`][Deref] trait 来实现的。
 
 一个 Deref 的实现表示该实现类型可以通过调用 `deref` 方法来转换成一个目标类型，该方法接受该调用类型的一个不可变引用，并返回一个指向目标的引用（相同的生命周期）。前缀操作符 `*` 是 `deref` 方法的缩写方式。
 
