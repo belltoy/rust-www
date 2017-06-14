@@ -236,7 +236,7 @@ Rust 编译似乎很慢。这是为什么？
 为什么没有集成的基准测试基础设施？
 </a></h3>
 
-有，但它只在夜间发行频道上可用。我们最终计划为集成的基准建立一个可插拔系统，但同时，目前的系统[被认为是不稳定的](https://github.com/rust-lang/rust/issues/29553)。
+有，但它只在 nightly 发行频道上可用。我们最终计划为集成的基准建立一个可插拔系统，但同时，目前的系统[被认为是不稳定的](https://github.com/rust-lang/rust/issues/29553)。
 
 <h3><a href="#does-rust-do-tail-call-optimization" name="does-rust-do-tail-call-optimization">
 Rust 是否有做尾部调用优化？
@@ -316,7 +316,7 @@ fn is_odd(x: i64) -> bool {
 
 首先，如果 `match` 涵盖了所有的可能性，将来在 `enum` 中添加变量将导致编译失败，而不是运行时错误。这种类型的编译器辅助使得在 Rust 中大胆地重构成为可能。
 
-其次，穷举检查使得默认情况下的主义很明确：通常，在一个非穷举的 `match` 中如果没有匹配到任何项，唯一安全的做法是 panic 当前的线程。早期版本的 Rust 并不要求 `match` 项需要穷举，发现这是一个很大的 bug 的来源。
+其次，穷举检查使得默认情况下的语义很明确：通常，在一个非穷举的 `match` 中如果没有匹配到任何项，唯一安全的做法是 panic 当前的线程。早期版本的 Rust 并不要求 `match` 项需要穷举，发现这是一个很大的 bug 的来源。
 
 使用通配符 `_` 可以很容易地忽略所有未指定的情况：
 
@@ -574,7 +574,7 @@ fn main() {
 为什么某些类型的值在传递到一个函数后可以使用，而另一些类型的值传递后使用会导致错误？
 </a></h3>
 
-如果一个类型实现了 [`Copy`][Copy] 特征，则它将在传递到一个函数时被复制。Rust 中的所有数字类型都实现了 [`Copy`][Copy]，但结构类型默认并未实现 [`Copy`][Copy]，因此它们是被移动。这意味着结构体不能在其他地方重用，除非它是通过 return 从函数中移出。
+如果一个类型实现了 [`Copy`][Copy] trait，则它将在传递到一个函数时被复制。Rust 中的所有数字类型都实现了 [`Copy`][Copy]，但结构类型默认并未实现 [`Copy`][Copy]，因此它们是被移动。这意味着结构体不能在其他地方重用，除非它是通过 return 从函数中移出。
 
 <h3><a href="#how-do-you-deal-with-a-use-of-moved-value-error" name="how-do-you-deal-with-a-use-of-moved-value-error">
 如何处理「use of moved value」错误？
