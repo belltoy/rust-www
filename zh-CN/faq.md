@@ -580,40 +580,40 @@ fn main() {
 如何处理「use of moved value」错误？
 </a></h3>
 
-This error means that the value you're trying to use has been moved to a new owner. The first thing to check is whether the move in question was necessary: if it moved into a function, it may be possible to rewrite the function to use a reference, rather than moving. Otherwise if the type being moved implements [`Clone`][Clone], then calling `clone()` on it before moving will move a copy of it, leaving the original still available for further use. Note though that cloning a value should typically be the last resort since cloning can be expensive, causing further allocations.
+此错误表示你尝试使用的值已经被移动给新的拥有者。首先要检查的是这个移动是否有必要：如果移动到一个函数中，可能可以尝试重写函数，改为使用引用而不是移动。另外如果如果被移动的类型实现了 [`Clone`][Clone]，那么在移动之前调用它的 `clone()` 方法，将移动它的一个拷贝，原始的值可以在之后继续使用。注意，然后克隆一个值通常应该是最后考虑的手段，因为克隆可能会是昂贵的，会导致更多的内存分配。
 
-If the moved value is of your own custom type, consider implementing [`Copy`][Copy] (for implicit copying, rather than moving) or [`Clone`][Clone] (explicit copying). [`Copy`][Copy] is most commonly implemented with `#[derive(Copy, Clone)]` ([`Copy`][Copy] requires [`Clone`][Clone]), and [`Clone`][Clone] with `#[derive(Clone)]`.
+如果移动的值是你自定义的类型，请考虑实现 [`Copy`][Copy]（用于隐式拷贝而不是移动）或者 [`Clone`][Clone]（用于显式拷贝）。[`Copy`][Copy] 经常是用 `#[derive(Copy, Clone)]` 来实现的（[`Copy`][Copy] 的实现要求要实现 [`Clone`][Clone]，[`Clone`][Clone] 也是用 `#[derive(Clone)]` 来实现的。
 
-If none of these are possible, you may want to modify the function that acquired ownership to return ownership of the value when the function exits.
+如果这些方式都不行，你可能需要修改这个要求获取所有权的函数，改为在函数退出的时候返回这个值的所有权。
 
 <h3><a href="#what-are-the-rules-for-different-self-types-in-methods" name="what-are-the-rules-for-different-self-types-in-methods">
 在方法声明中使用 <code>self</code>、<code>&amp;self</code> 与 <code>&amp;mut self</code> 的规则是什么？
 </a></h3>
 
-- 使用 `self`，当一个函数需要消费该值
-- 使用 `&self`，当一个函数只需要该值的只读引用
-- 使用 `&mut self`，当一个函数不需消费而要变更该值
+- 如果一个函数需要消费该值，用 `self`
+- 如果一个函数只需要该值的只读引用，用 `&self`
+- 如果一个函数不需消费而要变更该值，用 `&mut self`
 
 <h3><a href="#how-can-i-understand-the-borrow-checker" name="how-can-i-understand-the-borrow-checker">
 我该怎么能理解借用检查器？
 </a></h3>
 
-借用检查器只使用几条规则，而这可以在 Rust 之书的[借用部分](https://doc.rust-lang.org/stable/book/references-and-borrowing.html#the-rules)找到，当评估（Eval） Rust 代码时。这些规则为：
+借用检查器在对 Rust 代码进行求值的时候只使用几条规则，可以在 Rust 之书的[借用章节](https://doc.rust-lang.org/stable/book/references-and-borrowing.html#the-rules)找到。这些规则为：
 
-> First, any borrow must last for a scope no greater than that of the owner. Second, you may have one or the other of these two kinds of borrows, but not both at the same time:
+> 首先，任何借用所持续的作用范围不得超过它的拥有者。其次，你可以使用以下两种借用形式的其中任何一种，但不能同时使用：
 >
-> - one or more references (&T) to a resource.
-> - exactly one mutable reference (&mut T)
+> - 某个资源的一个或者多个引用（&T）。
+> - 该资源的一个可变引用（&mut T）。
 
-While the rules themselves are simple, following them consistently is not, particularly for those unaccustomed to reasoning about lifetimes and ownership.
+虽然规则本身很简单，但是要遵循它们却并不容易，尤其是对于那些不习惯于推导生命周期和所有权的人。
 
-The first step in understanding the borrow checker is reading the errors it produces. A lot of work has been put into making sure the borrow checker provides quality assistance in resolving the issues it identifies. When you encounter a borrow checker problem, the first step is to slowly and carefully read the error reported, and to only approach the code after you understand the error being described.
+理解借用检查器的第一步是阅读它产生的错误信息。为了确保借用检查器能够产生高质量的帮助信息来解决发现的问题，已经投入了大量的工作。当你遇到一个借用检查器的问题，首先要做的是慢慢扡仔细地阅读错误报告，只有在理解了所描述的错误之后才着手处理相关的代码。
 
-The second step is to become familiar with the ownership and mutability-related container types provided by the Rust standard library, including [`Cell`][Cell], [`RefCell`][RefCell], and [`Cow`][Cow]. These are useful and necessary tools for expressing certain ownership and mutability situations, and have been written to be of minimal performance cost.
+第二步是熟悉 Rust 标准库所提供的与所有权和可变性相关的容器类型，包括 [`Cell`][Cell]，[`RefCell`][RefCell]，以及 [`Cow`][Cow]。这些都是用于表达某些涉及所有权和可变性的情况时，非常有用有且必需的工具，而且是具有最低的性能损耗的实现。
 
-The single most important part of understanding the borrow checker is practice. Rust's strong static analyses guarantees are strict and quite different from what many programmers have worked with before. It will take some time to become completely comfortable with everything.
+理解借用检查器是重要的环节是实践。Rust 的强静态分析保证与许多程序员以往接触过的有天壤之别。需要花些时间来适应这些。
 
-If you find yourself struggling with the borrow checker, or running out of patience, always feel free to reach out to the [Rust community](community.html) for help.
+如果你发现你在借用检查器中遇到困难，或者失去耐心，可以随时联系 [Rust 社区](community.thml) 寻求帮助。
 
 <h3><a href="#when-is-rc-useful" name="when-is-rc-useful">
 <code>Rc</code> 在什么时候有用？
