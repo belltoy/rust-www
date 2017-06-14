@@ -33,7 +33,7 @@ title: 常被问到的问题 &middot; Rust 编程语言
             <li><a href="#debugging">调试和工具</a></li>
             <li><a href="#low-level">底层</a></li>
             <li><a href="#cross-platform">跨平台</a></li>
-            <li><a href="#modules-and-crates">模块和包装箱</a></li>
+            <li><a href="#modules-and-crates">模块和包</a></li>
             <li><a href="#libraries">库</a></li>
             <li><a href="#design-patterns">设计模式</a></li>
             <li><a href="#other-languages">其他语言</a></li>
@@ -212,7 +212,7 @@ Rust 编译似乎很慢。这是为什么？
 
 代码转换和优化。Rust 提供了高级抽象，它可以编译成高效的机器代码，而这些翻译需要时间来运行，特别是优化。
 
-但 Rust 的编译时间并不像看起来那么糟糕，并有理由相信会有所改善。当比较 C++ 与 Rust 的类似大小的项目时，整个项目的编译时间一般被认为是可比的。Rust 编译缓慢的一般认识很大程度上是由于 C++ 与 Rust 的*编译模型*的差异：C++ 的编译单元是文件，而 Rust 则是包装箱，它由很多文件组成。因此，在开发过程中，修改单个 C++ 文件导致的重新编译比 Rust 更少。正在进行的重大工作将重构编译器来引入[增量编译](https://github.com/rust-lang/rfcs/blob/master/text/1298-incremental-compilation.md)，这将使 Rust 的编译时间变得比 C++ 的模型更有优势。
+但 Rust 的编译时间并不像看起来那么糟糕，并有理由相信会有所改善。当比较 C++ 与 Rust 的类似大小的项目时，整个项目的编译时间一般被认为是可比的。Rust 编译缓慢的一般认识很大程度上是由于 C++ 与 Rust 的*编译模型*的差异：C++ 的编译单元是文件，而 Rust 则是包（crate），它由很多文件组成。因此，在开发过程中，修改单个 C++ 文件导致的重新编译比 Rust 更少。正在进行的重大工作将重构编译器来引入[增量编译](https://github.com/rust-lang/rfcs/blob/master/text/1298-incremental-compilation.md)，这将使 Rust 的编译时间变得比 C++ 的模型更有优势。
 
 除了编译模型外，Rust 的语言设计和编译器实现的其他几个方面也影响了编译时性能。
 
@@ -304,8 +304,8 @@ fn is_odd(x: i64) -> bool {
 
 在 Rust 中，声明倾向于使用显式类型，而实际代码则用类型推导。这种设计有几个原因：
 
-- 强制性声明有助于在模块和包装箱级别上实现接口的稳定性。
-- 签名便于提高程序员对代码的理解，消除 IDE 在整个包装箱上运行类型推导算法来猜测一个函数参数类型的必要；它总是明确和就近的。
+- 强制性声明有助于在模块和包（crate）级别上实现接口的稳定性。
+- 签名便于提高程序员对代码的理解，消除 IDE 在整个包上运行类型推导算法来猜测一个函数参数类型的必要；它总是明确和就近的。
 - 实现上，它简化了类型推导算法，因为推导只需要一次查看一个函数。
 
 <h3><a href="#why-does-match-have-to-be-exhaustive" name="why-does-match-have-to-be-exhaustive">
@@ -984,7 +984,7 @@ Rust 有许多开发环境可供选择，详见官方的 [IDE 支持页面](http
 如何以大端或小端格式读取与写入一个文件或其他字节流中的是 <code>i32</code> 或 <code>f64</code> 这样的数字类型？
 </a></h3>
 
-您应该检出 [byteorder 包装箱](http://burntsushi.net/rustdoc/byteorder/)，它提供了这种实用程序。
+您应该检出 [byteorder 包](http://burntsushi.net/rustdoc/byteorder/)，它提供了这种实用程序。
 
 <h3><a href="#does-rust-guarantee-data-layout" name="does-rust-guarantee-data-layout">
 Rust 是否保证特定的数据布局？
@@ -1043,29 +1043,29 @@ Rust 的交叉编译是可能的，它但需要[一些流程](https://github.com
 
 Rust 确实为每个受支持平台方法[标准库副本](https://static.rust-lang.org/dist/index.html)，在分发目录上可以找到各构建目录，其中包含的 `rust-std-*` 文件就是它们，但尚没有自动安装它们的方法。
 
-<h2 id="modules-and-crates">模块（module）和包装箱（crate）</h2>
+<h2 id="modules-and-crates">模块（module）和包（crate）</h2>
 
 <h3><a href="#what-is-the-relationship-between-a-module-and-a-crate" name="what-is-the-relationship-between-a-module-and-a-crate">
-模块与包装箱之间的关系是什么？
+模块与包之间的关系是什么？
 </a></h3>
 
-- 一个包装箱是一个编译单元，它是 Rust 编译器可操作的最小代码量。
-- 一个模块是一个（可能是嵌套的）放在一个包装箱内的代码单元。
-- 一个包装箱包含一个隐含的、未命名的顶层模块。
-- 递归定义可以跨越模块，但不能跨包装箱。
+- 一个包是一个编译单元，它是 Rust 编译器可操作的最小代码量。
+- 一个模块是一个（可能是嵌套的）放在一个包内的代码单元。
+- 一个包包含一个隐含的、未命名的顶层模块。
+- 递归定义可以跨越模块，但不能跨包。
 
 <h3><a href="#why-cant-the-rust-compiler-find-a-library-im-using" name="why-cant-the-rust-compiler-find-a-library-im-using">
 为什么 Rust 编译器找不到我 <code>use</code> 的库？
 </a></h3>
 
-可能有多种原因，但一个常见的错误是没有意识到 `use` 声明是相对于包装箱的根层级。如果在项目的根文件中定义，请尝试重写声明以使用它们要使用的路径，并查看是否可以解决问题。
+可能有多种原因，但一个常见的错误是没有意识到 `use` 声明是相对于包的根层级。如果在项目的根文件中定义，请尝试重写声明以使用它们要使用的路径，并查看是否可以解决问题。
 
 还有 `self` 和 `super`，它们分别使用相对于当前模块或者父模块的路径。
 
-有关 `use` 库的完整信息，请阅读 Rust 之书的[「包装箱和模块」](https://doc.rust-lang.org/stable/book/crates-and-modules.html) 一章。
+有关 `use` 库的完整信息，请阅读 Rust 之书的[「包和模块」](https://doc.rust-lang.org/stable/book/crates-and-modules.html) 一章。
 
 <h3><a href="#why-do-i-have-to-declare-modules-with-mod" name="why-do-i-have-to-declare-modules-with-mod">
-为什么我必须在包装箱顶层用 <code>mod</code> 声明模块文件，而不能直接 <code>use</code> 它们？
+为什么我必须在包顶层用 <code>mod</code> 声明模块文件，而不能直接 <code>use</code> 它们？
 </a></h3>
 
 有两种方法在 Rust 中声明模块：内链或者另一个文件。下面是两个例子：
@@ -1108,7 +1108,7 @@ pub fn f() {
 正如 Cargo 的[配置文档](http://doc.crates.io/config.html)所说，您可以设置配置文件中 `[http]` 下的「proxy」变量使 Cargo 使用一个代理服务器。
 
 <h3><a href="#why-cant-the-compile-find-method-implementations" name="why-cant-the-compile-find-method-implementations">
-为什么编译器找不到方法实现，即使我已经 <code>use</code> 包装箱？
+为什么编译器找不到方法实现，即使我已经 <code>use</code> 了相应的包？
 </a></h3>
 
 对于在 trait 上定义的方法，必须显示导入 trait 的声明。这意味着导入一个实现了 trait 的 struct 模块是不够的，还必须导入这个 trait 本身。
@@ -1170,7 +1170,7 @@ Quoting the [official explanation](https://internals.rust-lang.org/t/crates-io-p
 我该怎样发出一个 HTTP 请求？
 </a></h3>
 
-标准库不包含 HTTP 的实现，因此您需要用外部的包装箱。 [Hyper](https://github.com/hyperium/hyper) 是最流行的选择，但[也有众多其他可选](https://crates.io/keywords/http)。
+标准库不包含 HTTP 的实现，因此您需要用外部的包。 [Hyper](https://github.com/hyperium/hyper) 是最流行的选择，但[也有众多其他可选](https://crates.io/keywords/http)。
 
 <h3><a href="#how-can-i-write-a-gui-application" name="how-can-i-write-a-gui-application">
 如何用 Rust 编写 GUI 应用程序？
@@ -1185,7 +1185,7 @@ Quoting the [official explanation](https://internals.rust-lang.org/t/crates-io-p
 [Serde](https://github.com/serde-rs/serde) 是推荐的将 Rust 数据序列化与反序列化为多种格式的库。
 
 <h3><a href="#is-there-a-standard-2d-vector-crate" name="is-there-a-standard-2d-vector-crate">
-有标准的 2D+ 矢量和形状包装箱吗？
+有标准的 2D+ 矢量和形状包吗？
 </a></h3>
 
 还没有呢！你能写一个吗？
@@ -1240,7 +1240,7 @@ Rust 目前对编译时常量的支持有限。您可以使用 `const` 声明（
 我可以在 main 发生前运行初始化代码吗？
 </a></h3>
 
-Rust 没有「`main` 之前」的概念。你想找到的最接近的可能是 [`lazy-static`](https://github.com/Kimundi/lazy-static.rs) 包装箱，它在初次使用时通过懒惰初始化静态变量做到类似「在main之前」。
+Rust 没有「`main` 之前」的概念。你想找到的最接近的可能是 [`lazy-static`](https://github.com/Kimundi/lazy-static.rs) 包，它在初次使用时通过懒惰初始化静态变量做到类似「在main之前」。
 
 <!--
 
@@ -1268,7 +1268,7 @@ Rust 是否允许全局的非常量表达式值？
 
 参考 [C++ FQA](http://yosefk.com/c++fqa/ctors.html#fqa-10.12) 中关于「static initialization order fiasco」的问题，以及 [Eric Lippert's blog](https://ericlippert.com/2013/02/06/static-constructors-part-one/) 中针对 C# 中此功能的挑战。
 
-您可以以 [lazy-static](https://crates.io/crates/lazy_static/) 包装箱使用近似的非常量表达式全局对象。
+您可以以 [lazy-static](https://crates.io/crates/lazy_static/) 包使用近似的非常量表达式全局对象。
 
 <h2 id="other-languages">其他语言</h2>
 
