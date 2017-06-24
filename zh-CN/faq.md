@@ -725,51 +725,50 @@ Rust 如何保证「无空指针」和「无悬挂指针」？
 <h2 id="generics">泛型</h2>
 
 <h3><a href="#what-is-monomorphisation" name="what-is-monomorphisation">
-什么是「单态化」？
+什么是「单态化（monomorphisation）」？
 </a></h3>
 
-Monomorphisation specializes each use of a generic function (or structure) with specific instance,
-based on the parameter types of calls to that function (or uses of the structure).
+单态化是基于函数调用（或结构的使用）的参数类型，对每个泛型函数（或结构）的特化。
 
-During monomorphisation a new copy of the generic function is translated for each unique set of types the function is instantiated with. This is the same strategy used by C++. It results in fast code that is specialized for every call-site and statically dispatched, with the tradeoff that functions instantiated with many different types can cause "code bloat", where multiple function instances result in larger binaries than would be created with other translation strategies.
+在单态化期间，该泛型函数实例化的每个单独的类型集被翻译成一个新的拷贝。这和 C++ 使用的策略相同。它产生专门针对每次调用和静态调度的快速代码，比起使用其它翻译策略所产生的二进制文件，这种函数被多个不同的类型实例化的权衡可能会导致「代码膨胀」，其中多个函数实例导致了更大的二进制文件。
 
-Functions that accept [trait objects](https://doc.rust-lang.org/book/trait-objects.html) instead of type parameters do not undergo monomorphisation. Instead, methods on the trait objects are dispatched dynamically at runtime.
+相比接收不同类型的参数，接受 [trait 对象](https://doc.rust-lang.org/book/trait-objects.html)的函数不会发生单态化。相反，trait 对象的方法在运行时是动态调度的。
 
 <h3><a href="#whats-the-difference-between-a-function-and-a-closure-that-doesnt-capture" name="whats-the-difference-between-a-function-and-a-closure-that-doesnt-capture">
 一个函数和一个没有捕获任何变量的闭包有什么区别？
 </a></h3>
 
-Functions and closures are operationally equivalent, but have different runtime representations due to their differing implementations.
+函数和闭包在操作上是等效的，但是由于它们的不同实现而具有不同的运行时表现。
 
-Functions are a built-in primitive of the language, while closures are essentially syntactic sugar for one of three traits: [`Fn`][Fn], [`FnMut`][FnMut], and [`FnOnce`][FnOnce]. When you make a closure, the Rust compiler automatically creates a struct implementing the appropriate trait of those three and containing the captured environment variables as members, and makes it so the struct can be called as a function. Bare functions can not capture an environment.
+函数是语言内置的原生类型，而闭包基本上是三种 trait 之一的语法糖：[`Fn`][Fn]，[`FnMut`][FnMut]，和 [`FnOnce`][FnOnce]。当你创建一个闭包时，Rust 编译器会自动创建一个实现了这三种 trait 之中相应的 trait 的结构，并将捕获到的环境变量作为成员，并使此结构能够作为函数一样调用。裸函数无法捕获它的环境。
 
-The big difference between these traits is how they take the `self` parameter. [`Fn`][Fn] takes `&self`, [`FnMut`][FnMut] takes `&mut self`, and [`FnOnce`][FnOnce] takes `self`.
+这些 trait 之间的差异是它们如何使用 `self` 参数。[`Fn`][Fn] 使用 `&self`，[`FnMut`][FnMut] 使用 `&mut self`，而 [`FnOnce`][FnOnce] 则使用 `self`。
 
-Even if a closure does not capture any environment variables, it is represented at runtime as two pointers, the same as any other closure.
+即使闭包没有捕获任何环境变量，它在运行时也表现为两个指针，与其它任何闭包相同。
 
 <h3><a href="#what-are-higher-kinded-types" name="what-are-higher-kinded-types">
 什么是更高级的类型，为什么我想要它们，为什么 Rust 没有它们？
 </a></h3>
 
-Higher-kinded types are types with unfilled parameters. Type constructors, like [`Vec`][Vec], [`Result`][Result], and [`HashMap`][HashMap] are all examples of higher-kinded types: each requires some additional type parameters in order to actually denote a specific type, like `Vec<u32>`. Support for higher-kinded types means these "incomplete" types may be used anywhere "complete" types can be used, including as generics for functions.
+高级类型具有未知参数。类型构造器，如 [`Vec`][Vec]，[`Result`][Result]，以及 [`HashMap`][HashMap] 都是高级类型的范例：每个都需要一些额外的类型参数，以便于实际显示一个特定的类型，如 `Vec<u32>`。对高级类型的支持意味着这些「不完全」的类型可以用于任何「完全」类型可以使用的地方，包括函数的泛型。
 
-Any complete type, like [`i32`][i32], [`bool`][bool], or [`char`][char] is of kind `*` (this notation comes from the field of type theory). A type with one parameter, like [`Vec<T>`][Vec] is of kind `* -> *`, meaning that [`Vec<T>`][Vec] takes in a complete type like [`i32`][i32] and returns a complete type `Vec<i32>`. A type with three parameters, like [`HashMap<K, V, S>`][HashMap] is of kind `* -> * -> * -> *`, and takes in three complete types (like [`i32`][i32], [`String`][String], and [`RandomState`][RandomState]) to produce a new complete type `HashMap<i32, String, RandomState>`.
+任意的完全类型，如 [`i32`][i32]，[`bool`][bool]，或 [`char`][char] 都是一种 `*` 类型（这种符号来自类型理论领域）。具有一个参数的类型，如 [`Vec<T>`][Vec] 是一种 `* -> *`，意思是 [`Vec<T>`][Vec] 接受一个如 [`i32`][i32] 的完全类型，并返回一个完全类型 `Vec<i32>`。一个具有三个参数的类型，如 [`HashMap<K, V, S>`][HashMap] 是 `* -> * -> * -> *` 类型，它接受三个完全类型（如 [`i32`][i32]，[`String`][String]，以及 [`RandomState`][RandomState]），产生一个新的完全类型 `HashMap<i32, String, RandomState>`。
 
-In addition to these examples, type constructors can take *lifetime* arguments, which we'll denote as `Lt`. For example, `slice::Iter` has kind `Lt -> * -> *`, because it must be instantiated like `Iter<'a, u32>`.
+除了这些例子，类型构造器还可以接受 *生命周期（lifetime）* 参数，我们将其表示为 `Lt`。例如，`slice::Iter` 具有 `Lt -> * -> *` 类型，因为它必须像 `Iter<'a, u32>` 这样实例化。
 
-The lack of support for higher-kinded types makes it difficult to write certain kinds of generic code. It's particularly problematic for abstracting over concepts like iterators, since iterators are often parameterized over a lifetime at least. That in turn has prevented the creation of traits abstracting over Rust's collections.
+缺少对高级类型的支持，使得很验证编写某些类型的泛型代码。尤其是对于像迭代器这样的概念进行抽象会有问题，因为迭代器通常为至少需要用一个生命周期才能进行参数化。这反过来又阻止了对 Rust 的集合类型上的 trait 抽象。
 
-Another common example is concepts like functors or monads, both of which are type constructors, rather than single types.
+另一个常见的例子是像 function 或 monad 这样的概念，它们都是类型构造器，而不是单一的类型。
 
-Rust doesn't currently have support for higher-kinded types because it hasn't been a priority compared to other improvements we want to make. Since the design is a major, cross-cutting change, we also want to approach it carefully. But there's no inherent reason for the current lack of support.
+Rust 目前不支持更高级的类型，因为与我们想要进行的其它改进相比，这不是一个高优先的事项。由于这种设计涉及了主要和交叉的改动，我们也想仔细考虑。但目前缺乏支持并没有固有的内在原因。
 
 <h3><a href="#what-do-named-type-parameters-in-generic-types-mean" name="what-do-named-type-parameters-in-generic-types-mean">
-通用类型中 <code>&lt;T=Foo&gt;</code> 这样的命名类型参数是什么意思？
+泛型类型中 <code>&lt;T=Foo&gt;</code> 这样的命名类型参数是什么意思？
 </a></h3>
 
-These are called [associated types](https://doc.rust-lang.org/stable/book/associated-types.html), and they allow for the expression of trait bounds that can't be expressed with a `where` clause. For example, a generic bound `X: Bar<T=Foo>` means "`X` must implement the trait `Bar`, and in that implementation of `Bar`, `X` must choose `Foo` for `Bar`'s associated type, `T`." Examples of where such a constraint cannot be expressed via a `where` clause include trait objects like `Box<Bar<T=Foo>>`.
+这些被称为[关联类型](https://doc.rust-lang.org/stable/book/associated-types.html)，允许表达不能用 `where` 子句表达的 trait 约束。例如，一个泛型约束 `X: Bar<T=Foo>` 的意思是「`X` 必须实现 `Bar` 这个 trait，而且在 `Bar` 的实现中， `X` 必须将 `Foo` 作为 `Bar` 的关联类型 `T`」。例子中这样的约束不能通过一个 `where` 子句表示，也不能用像 `Box<Bar<T=Foo>>` 这样的 trait 对象表示。
 
-Associated types exist because generics often involve families of types, where one type determines all of the others in a family. For example, a trait for graphs might have as its `Self` type the graph itself, and have associated types for nodes and for edges. Each graph type uniquely determines the associated types. Using associated types makes it much more concise to work with these families of types, and also provides better type inference in many cases.
+关联类型的存在，是由于泛型通常牵涉类型家族，其中某个类型决定了家族中的所有其它类型。例如，一个用于图形的 trait 可能具有图形自己的 `Self` 类型，而且具有节点和边缘的关联类型。每个图形类型唯一确定其关联类型。使用关联类型可以使这些类型的家族更加简洁，并且在许多情况下还能提供更好的类型推断。
 
 <h3><a href="#how-do-i-overload-operators" name="how-do-i-overload-operators">
 我可以重载运算符吗？哪些可以，怎么做？
@@ -822,14 +821,14 @@ impl Add for Foo {
 | `mut []`             | [`IndexMut`][IndexMut]         |
 
 <h3><a href="#why-the-split-between-eq-partialeq-and-ord-partialord" name="why-the-split-between-eq-partialeq-and-ord-partialord">
-Why the split between <code>Eq</code>/<code>PartialEq</code> and <code>Ord</code>/<code>PartialOrd</code>?
+为什么把 <code>Eq</code>/<code>PartialEq</code> 和 <code>Ord</code>/<code>PartialOrd</code> 分开？
 </a></h3>
 
-There are some types in Rust whose values are only partially ordered, or have only partial equality. Partial ordering means that there may be values of the given type that are neither less than nor greater than each other. Partial equality means that there may be values of the given type that are not equal to themselves.
+Rust 中有一些类型的值只能部分有序，或者只有部分相等。部分有序的意思对于给定的类型，可能存在既不小于也不大于彼此的值。部分相等的意思是对于给定的类型，可能存在与自身不相等的值。
 
-Floating point types ([`f32`][f32] and [`f64`][f64]) are good examples of each. Any floating point type may have the value `NaN` (meaning "not a number"). `NaN` is not equal to itself (`NaN == NaN` is false), and not less than or greater than any other floating point value. As such, both [`f32`][f32] and [`f64`][f64] implement [`PartialOrd`][PartialOrd] and [`PartialEq`][PartialEq] but not [`Ord`][Ord] and not [`Eq`][Eq].
+浮点类型（[`f32`][f32] 和 [`f64`][f64]）对于这两种类型是个好例子。任何浮点类型可能具有值 `NaN`（意思是「非数字」）。`NaN` 不等于自身（`NaN == NaN` 为假），也不小于或者大于任何其它浮点值。这样，[`f32`][f32] 和 [`f64`][f64] 都实现了 [`PartialOrd`][PartialOrd] 和 [`PartialEq`][PartialEq]， 而非 [`Ord`][Ord] 也非 [`Eq`][Eq]。
 
-As explained in [the earlier question on floats](#why-cant-i-compare-floats), these distinctions are important because some collections rely on total orderings/equality in order to give correct results.
+正如[先前关于浮点类型问题](#why-cant-i-compare-floats)的解答，这些区别很重要，因为一些集合依赖于全排序/全等以得出正确的结果。
 
 <h2 id="input-output">输入 / 输出</h2>
 
@@ -1294,7 +1293,7 @@ Rust 是否允许全局的非常量表达式值？
 
 __单态化（Monomorphization）__
 
-Rust 的单态化泛型，意味着为程序中使用的每个具体类型生成一个通用函数或者类型的新版本。这与 C++ 中模板的工作方式类似。例如，在以下程序中：
+Rust 的单态化泛型，意味着为程序中使用的每个具体类型生成一个泛型函数或者类型的新版本。这与 C++ 中模板的工作方式类似。例如，在以下程序中：
 
 ```rust
 fn foo<T>(t: T) {
