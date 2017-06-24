@@ -766,7 +766,7 @@ Rust 目前不支持更高级的类型，因为与我们想要进行的其它改
 泛型类型中 <code>&lt;T=Foo&gt;</code> 这样的命名类型参数是什么意思？
 </a></h3>
 
-这些被称为[关联类型](https://doc.rust-lang.org/stable/book/associated-types.html)，允许表达不能用 `where` 子句表达的 trait 约束。例如，一个泛型约束 `X: Bar<T=Foo>` 的意思是「`X` 必须实现 `Bar` 这个 trait，而且在 `Bar` 的实现中， `X` 必须将 `Foo` 作为 `Bar` 的关联类型 `T`」。例子中这样的约束不能通过一个 `where` 子句表示，也不能用像 `Box<Bar<T=Foo>>` 这样的 trait 对象表示。
+这些被称为[关联类型](https://doc.rust-lang.org/stable/book/associated-types.html)，允许表达不能用 `where` 子句表达的 trait 约束。例如，一个泛型约束 `X: Bar<T=Foo>` 的意思是「`X` 必须实现 `Bar` 这个 trait，而且在 `Bar` 的实现中，`X` 必须将 `Foo` 作为 `Bar` 的关联类型 `T`」。例子中这样的约束不能通过一个 `where` 子句表示，也不能用像 `Box<Bar<T=Foo>>` 这样的 trait 对象表示。
 
 关联类型的存在，是由于泛型通常牵涉类型家族，其中某个类型决定了家族中的所有其它类型。例如，一个用于图形的 trait 可能具有图形自己的 `Self` 类型，而且具有节点和边缘的关联类型。每个图形类型唯一确定其关联类型。使用关联类型可以使这些类型的家族更加简洁，并且在许多情况下还能提供更好的类型推断。
 
@@ -821,14 +821,14 @@ impl Add for Foo {
 | `mut []`             | [`IndexMut`][IndexMut]         |
 
 <h3><a href="#why-the-split-between-eq-partialeq-and-ord-partialord" name="why-the-split-between-eq-partialeq-and-ord-partialord">
-为什么把 <code>Eq</code>/<code>PartialEq</code> 和 <code>Ord</code>/<code>PartialOrd</code> 分开？
+为什么要把 <code>Eq</code>/<code>PartialEq</code> 及 <code>Ord</code>/<code>PartialOrd</code> 分开？
 </a></h3>
 
-Rust 中有一些类型的值只能部分有序，或者只有部分相等。部分有序的意思对于给定的类型，可能存在既不小于也不大于彼此的值。部分相等的意思是对于给定的类型，可能存在与自身不相等的值。
+Rust 中有一些类型的值只是部分有序（偏序），或者只有部分等价。部分有序的意思对于给定的类型，可能存在既不小于也不大于彼此的值。部分等价的意思是对于给定的类型，可能存在与自身不相等的值。
 
 浮点类型（[`f32`][f32] 和 [`f64`][f64]）对于这两种类型是个好例子。任何浮点类型可能具有值 `NaN`（意思是「非数字」）。`NaN` 不等于自身（`NaN == NaN` 为假），也不小于或者大于任何其它浮点值。这样，[`f32`][f32] 和 [`f64`][f64] 都实现了 [`PartialOrd`][PartialOrd] 和 [`PartialEq`][PartialEq]， 而非 [`Ord`][Ord] 也非 [`Eq`][Eq]。
 
-正如[先前关于浮点类型问题](#why-cant-i-compare-floats)的解答，这些区别很重要，因为一些集合依赖于全排序/全等以得出正确的结果。
+正如[先前关于浮点类型问题](#why-cant-i-compare-floats)的解答，这些区别很重要，因为一些集合依赖于全序/完全等价以得出正确的结果。
 
 <h2 id="input-output">输入 / 输出</h2>
 
