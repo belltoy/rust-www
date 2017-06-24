@@ -296,7 +296,7 @@ fn is_odd(x: i64) -> bool {
 
 在每个示例中，函数的最后一行是该函数的返回值。重要的是要注意，如果一个函数以分号结尾，它的返回类型将是 `()` ，表示没有返回值。隐式返回必须省略分号才能起作用。
 
-只有在隐式返回不可用的时候才使用显示返回，因为你在函数体结尾之前返回。虽然上述每个函数都可以写成 `return` 关键字加上分号，但这样做是不必要的冗余，而且与 Rust 的惯例不一致。
+只有在隐式返回不可用的时候才使用显式返回，因为你在函数体结尾之前返回。虽然上述每个函数都可以写成 `return` 关键字加上分号，但这样做是不必要的冗余，而且与 Rust 的惯例不一致。
 
 <h3><a href="#why-arent-function-signatures-inferred" name="why-arent-function-signatures-inferred">
 为什么函数签名不作推导？
@@ -886,51 +886,51 @@ Rust 中如何进行异步输入 / 输出？
 为什么 Rust 没有异常？
 </a></h3>
 
-Exceptions complicate understanding of control-flow, they express validity/invalidity outside of the type system, and they interoperate poorly with multithreaded code (a major focus of Rust).
+异常使对于控制流的理解复杂化，它们表示了类型系统之外的有效性/无效性，而且它们与多线程代码（Rust 的主要关注点）交互并不佳。
 
-Rust prefers a type-based approach to error handling, which is [covered at length in the book](https://doc.rust-lang.org/stable/book/error-handling.html). This fits more nicely with Rust's control flow, concurrency, and everything else.
+Rust 更倾向于使用基于类型的错误处理方式，在 [这本书中有详细的介绍](https://doc.rust-lang.org/stable/book/error-handling.html)。这会更适合 Rust 的控制流，并发和其它所有的特性。
 
 <h3><a href="#whats-the-deal-with-unwrap" name="whats-the-deal-with-unwrap">
-What's the deal with <code>unwrap()</code> everywhere?
+到处都有 <code>unwrap()</code> 是怎么回事？
 </a></h3>
 
-`unwrap()` is a function that extracts the value inside an [`Option`][Option] or [`Result`][Result] and panics if no value is present.
+`unwrap()` 是一个函数，它提取一个 [`Option`][Option] 或 [`Result`][Result] 中的值，如果值不存在，则引发 panic。
 
-`unwrap()` shouldn't be your default way to handle errors you expect to arise, such as incorrect user input. In production code, it should be treated like an assertion that the value is non-empty, which will crash the program if violated.
+`unwrap()` 不应该是你处理预料会出现的错误的默认方式，例如用户的错误输入。在生产环境的代码中，它被视为一个断言，断言该值非空，否则会导致程序崩溃。
 
-It's also useful for quick prototypes where you don't want to handle an error yet, or blog posts where error handling would distract from the main point.
+它也适用于快速原型中，你暂时不想处理错误，或者博客文章中，错误处理会喧宾夺主。
 
 <h3><a href="#why-do-i-get-errors-with-try" name="why-do-i-get-errors-with-try">
-为什么我尝试运行使用 <code>try!</code> 宏的示例代码时收到错误？
+为什么我尝试运行使用 <code>try!</code> 宏的示例代码时会得到错误？
 </a></h3>
 
-It's probably an issue with the function's return type. The [`try!`][TryMacro] macro either extracts the value from a [`Result`][Result], or returns early with the error [`Result`][Result] is carrying. This means that [`try`][TryMacro] only works for functions that return [`Result`][Result] themselves, where the `Err`-constructed type implements `From::from(err)`. In particular, this means that the [`try!`][TryMacro] macro cannot work inside the `main` function.
+这可能是函数返回类型的一个问题。[`try!`][TryMacro] 宏从 [`Result`][Result] 中提取值，或者捕获 [`Result`][Result] 中的错误并提早返回此错误。这意味着 [`try!`][TryMacro] 只适用于返回 [`Result`][Result] 的函数，其中的 `Err` 构造类型实现了 `From::from(err)`。在实践中，这意味着 [`try!`][TryMacro] 宏不能在 main 函数中执行。
 
 <h3><a href="#error-handling-without-result" name="error-handling-without-result">
-Is there an easier way to do error handling than having <code>Result</code>s everywhere?
+比起无处不在的 <code>Result</code>，有没有一种更简单的错误处理方式？
 </a></h3>
 
-If you're looking for a way to avoid handling [`Result`s][Result] in other people's code, there's always [`unwrap()`][unwrap], but it's probably not what you want. [`Result`][Result] is an indicator that some computation may or may not complete successfully. Requiring you to handle these failures explicitly is one of the ways that Rust encourages robustness. Rust provides tools like the [`try!` macro][TryMacro] to make handling failures ergonomic.
+如果你在寻找一种方法，避免处理从别人代码中返回的 [`Result`][Result] ，总是可以使用 [`unwrap()`][unwrap]，但它可能不是你想要的。 [`Result`][Result] 是一种用于指示某些运算可能成功或者失败的指示器。要求你显式处理这些失败，是 Rust 鼓励的鲁棒性的方法之一。 Rust 提供了像 [`try!`][TryMacro] 这样的宏，使得处理失败更便捷。
 
-If you really don't want to handle an error, use [`unwrap()`][unwrap], but know that doing so means that the code panics on failure, which usually results in a shutting down the process.
+如果你真的不想处理错误，可以用 [`unwrap()`][unwrap]，但请注意，这么做意味着在失败的时候代码会 panic，这通常会导致进程关闭。
 
 <h2 id="concurrency">并发</h2>
 
 <h3><a href="#can-i-use-static-values-across-threads-without-an-unsafe-block" name="can-i-use-static-values-across-threads-without-an-unsafe-block">
-Can I use static values across threads without an <code>unsafe</code> block?
+我可以不用 <code>unsafe</code> 块而跨线程使用静态（static）值吗？
 </a></h3>
 
-Mutation is safe if it's synchronized. Mutating a static [`Mutex`][Mutex] (lazily initialized via the [lazy-static](https://crates.io/crates/lazy_static/) crate) does not require an `unsafe` block, nor does mutating a static [`AtomicUsize`][AtomicUsize] (which can be initialized without lazy_static).
+在同步的情况下，修改是安全的。修改一个静态的 [`Mutex`][Mutex] （通过 [lazy-static](https://crates.io/crates/lazy_static/) 包进行延迟初始化）不需要用 `unsafe` 块，修改一个静态的 [`AtomicUsize`][AtomicUsize] （可以不用 lazy_staic 初始化）也是一样。
 
-More generally, if a type implements [`Sync`][Sync] and does not implement [`Drop`][Drop], it [can be used in a `static`](https://doc.rust-lang.org/book/const-and-static.html#static).
+更一般来说，如果一个类型实现了 [`Sync`][Sync] 而且不实现 [`Drop`][Drop]，它就 [可以被用作 `static`](https://doc.rust-lang.org/book/const-and-static.html#static)
 
 <h2 id="macros">宏</h2>
 
 <h3><a href="#can-i-write-a-macro-to-generate-identifiers" name="can-i-write-a-macro-to-generate-identifiers">
-Can I write a macro to generate identifiers?
+我可以编写一个宏来生成标识符吗？
 </a></h3>
 
-Not currently. Rust macros are ["hygienic macros"](https://en.wikipedia.org/wiki/Hygienic_macro), which intentionally avoid capturing or creating identifiers that may cause unexpected collisions with other identifiers. Their capabilities are significantly different than the style of macros commonly associated with the C preprocessor. Macro invocations can only appear in places where they are explicitly supported: items, method declarations, statements, expressions, and patterns. Here, "method declarations" means a blank space where a method can be put. They can't be used to complete a partial method declaration. By the same logic, they can't be used to complete a partial variable declaration.
+目前还不行。 Rust 宏是 [「卫生宏（hygienic macros）」](https://en.wikipedia.org/wiki/Hygienic_macro)，它有意避免捕获或者创建可能导致与其它标识符产生意外冲突的标识符。它们的功能与 C 预处理器相关的宏的风格有着显著的不同。宏调用只能在显式支持的地方出现：项（item），方法声明，表达式，以及模式。这里，「方法声明」是指可以放置方法的位置。它们不能用于完成部分方法声明。由于相同的逻辑，它们也不能用于完成部分变量声明。
 
 <h2 id="debugging">调试和工具</h2>
 
@@ -938,13 +938,13 @@ Not currently. Rust macros are ["hygienic macros"](https://en.wikipedia.org/wiki
 如何调试 Rust 程序？
 </a></h3>
 
-Rust programs can be debugged using [gdb](https://sourceware.org/gdb/current/onlinedocs/gdb/) or [lldb](http://lldb.llvm.org/tutorial.html), the same as C and C++. In fact, every Rust installation comes with one or both of rust-gdb and rust-lldb (depending on platform support). These are wrappers over gdb and lldb with Rust pretty-printing enabled.
+与 C 和 C++ 相同，Rust 程序可以用 [gdb](https://sourceware.org/gdb/current/onlinedocs/gdb/) 或 [lldb](http://lldb.llvm.org/tutorial.html) 进行调试。实际上，每个 Rust 安装都带了 rust-gdb 和 rust-lldb 两者或其中一个（取决于平台支持）。这些是对 gdb 和 lldb 的封装，增加了对 Rust 的显示优化。
 
 <h3><a href="#how-do-i-locate-a-panic" name="how-do-i-locate-a-panic">
-<code>rustc</code> said a panic occurred in standard library code. How do I locate the mistake in my code?
+<code>rustc</code> 说标准库代码中发生了一个 panic。我如何才能在我的代码中定位错误？
 </a></h3>
 
-This error is usually caused by [`unwrap()`ing][unwrap] a `None` or `Err` in client code. Enabling backtraces by setting the environment variable `RUST_BACKTRACE=1` helps with getting more information. Compiling in debug mode (the default for `cargo build`) is also helpful. Using a debugger like the provided `rust-gdb` or `rust-lldb` is also helpful.
+这个错误通常是由于用户代码中对一个 `None` 或者 `Err` 值执行 [`unwrap()`][unwrap] 操作引起的。设置环境变量 `RUST_BACKTRACE=1` 启用回溯或能，在助于获取更多的信息。在调试模式下编译（`cargo build` 的默认模式）也是有帮助的。使用 rust 提供的 `rust-gdb` 或 `rust-lldb` 这样的调试器也是有帮助的。
 
 <h3><a href="#what-ide-should-i-use" name="what-ide-should-i-use">
 我该使用什么 IDE？
@@ -1111,30 +1111,30 @@ pub fn f() {
 为什么编译器找不到方法实现，即使我已经 <code>use</code> 了相应的包？
 </a></h3>
 
-对于在 trait 上定义的方法，必须显示导入 trait 的声明。这意味着导入一个实现了 trait 的 struct 模块是不够的，还必须导入这个 trait 本身。
+对于在 trait 上定义的方法，必须显式导入 trait 的声明。这意味着导入一个实现了 trait 的 struct 模块是不够的，还必须导入这个 trait 本身。
 
 <h3><a href="#why-cant-the-compiler-infer-use-statements" name="why-cant-the-compiler-infer-use-statements">
 为什么编译器不能为我推断 <code>use</code> 声明？
 </a></h3>
 
-It probably could, but you also don't want it to. While in many cases it is likely that the compiler could determine the correct module to import by simply looking for where a given identifier is defined, this may not be the case in general. Any decision rule in `rustc` for choosing between competing options would likely cause surprise and confusion in some cases, and Rust prefers to be explicit about where names are coming from.
+它可以做到，但你也许也不希望它这么做。尽管在许多情况下，编译器可以通过简单地查找给定的标识符定义的位置来确定要导入的正确模块，但这可能不是一般的情况。在某些情况下， `rustc` 中任何用于在竞争项之间进行选择的规则都有可能引起意外和混淆，而 Rust 更倾向于显式标明名字来源于哪里。
 
-For example, the compiler could say that in the case of competing identifier definitions the definition from the earliest imported module is chosen. So if both module `foo` and module `bar` define the identifier `baz`, but `foo` is the first registered module, the compiler would insert `use foo::baz;`.
+例如，编译器可以说在竞争标识符定义的情况下，选择最早导入的模块。那么如果两个模块 `foo` 和模块 `bar` 都定义了标识符 `baz`，但是 `foo` 是首先注册的模块，编译器会插入 `use foo::baz;`。
 
 ```rust
 mod foo;
 mod bar;
 
-// use foo::baz  // to be inserted by the compiler.
+// use foo::baz  // 会由编译器插入。
 
 fn main() {
   baz();
 }
 ```
 
-If you know this is going to happen, perhaps it saves a small number of keystrokes, but it also greatly increases the possibility for surprising error messages when you actually meant for `baz()` to be `bar::baz()`, and it decreases the readability of the code by making the meaning of a function call dependent on module declaration. These are not tradeoffs we are willing to make.
+假如你知道这将会发生，或许这样可以节省少量的按键次数，但当你实际需要用到 `bar::baz()` 中的 `baz()` 时，会大大增加意外的错误信息的可能性，而且通过模块声明来决定一个函数调用的含义，也降低了代码的可读性。这些不是我们愿意做的折衷。
 
-但在未来，IDE 可以帮助管理声明，这会在两方面带来更好的结果：机器人帮忙拉取名称，并明确声明这些名称来自何处。
+然而，在将来，IDE 可以帮助管理声明，这会在两方面带来更好的结果：机器帮助引入名字，但显式声明这些名字来自何处。
 
 <!--
 ### How do I package and archive crates from [https://crates.io](https://crates.io)?
@@ -1149,20 +1149,20 @@ TODO: Write this answer.
 在 Rust 中使用 [libloading](https://crates.io/crates/libloading) 导入动态库，它提供了一个用于动态链接的跨平台系统。
 
 <h3><a href="#why-doesnt-crates-io-have-namespaces" name="why-doesnt-crates-io-have-namespaces">
-为什么 crates.io 没有名字空间？
+为什么 crates.io 没有命名空间？
 </a></h3>
 
-Quoting the [official explanation](https://internals.rust-lang.org/t/crates-io-package-policies/1041) of [https://crates.io](https://crates.io)'s design:
+引用 [https://crates.io](https://crates.io) 设计的[官方解释](https://internals.rust-lang.org/t/crates-io-package-policies/1041)：
 
-> In the first month with crates.io, a number of people have asked us about the possibility of introducing [namespaced packages](https://github.com/rust-lang/crates.io/issues/58).<br><br>
+> 在 crates.io 的第一个月里，有一些人就问我们关于引入[基于命名空间的包](https://github.com/rust-lang/crates.io/issues/58)的可能性。<br><br>
 >
-> While namespaced packages allow multiple authors to use a single, generic name, they add complexity to how packages are referenced in Rust code and in human communication about packages. At first glance, they allow multiple authors to claim names like `http`, but that simply means that people will need to refer to those packages as `wycats' http` or `reem's http`, offering little benefit over package names like `wycats-http` or `reem-http`.<br><br>
+> 尽管基于命名空间的包允许多个作者使用一个单一的，通用的名字，但这也增加了 Rust 代码中和人际沟通中如何引用包的复杂度。乍看之下，这允许多个作者占有像 `http` 这样的名字，但这只意味着人们必须用 `wycats' http` 或者 `reem's http` 来指定所引用的包，相对于像 `wycats-http` 或者 `reem-http` 这样的名字，前者几乎没什么好处。<br><br>
 >
-> When we looked at package ecosystems without namespacing, we found that people tended to go with more creative names (like `nokogiri` instead of "tenderlove's libxml2"). These creative names tend to be short and memorable, in part because of the lack of any hierarchy. They make it easier to communicate concisely and unambiguously about packages. They create exciting brands. And we've seen the success of several 10,000+ package ecosystems like NPM and RubyGems whose communities are prospering within a single namespace.<br><br>
+> 当我们在没有命名空间的情况下观察包生态系统时，发现人们更倾向于使用更多的富有创意的名字（如 `nologiri` 而不是 `tenderlove's libxml2`）。这些创意名字往往是简短且易于记忆的，部分原因在于减少了层级。这使得关于包的信息更容易被简洁明确地交流。它能创造令人兴奋的品牌。而且，我们已经看到了多个拥有超过 10,000+ 个包的生态系统的成功，如 NPM 和 RubyGems，其社区在单一的命名空间中蓬勃发展。<br><br>
 >
-> In short, we don't think the Cargo ecosystem would be better off if Piston chose a name like `bvssvni/game-engine` (allowing other users to choose `wycats/game-engine`) instead of simply `piston`.<br><br>
+> 简而言之，假如 Piston 选择一个如 `bvssvni/game-engine` （允许其它用户选择 `wycats/game-engine`）的名字而不是简单的 `piston`，我们不认为这样对 Cargo 生态系统会更好。<br><br>
 >
-> Because namespaces are strictly more complicated in a number of ways, and because they can be added compatibly in the future should they become necessary, we're going to stick with a single shared namespace.
+> 因为命名空间在许多方面有更严格的复杂度，而且因为在将来如果有必要可以添加兼容性，我们坚持使用一个共享的命名空间。
 
 <h2 id="libraries">库</h2>
 
@@ -1176,7 +1176,7 @@ Quoting the [official explanation](https://internals.rust-lang.org/t/crates-io-p
 如何用 Rust 编写 GUI 应用程序？
 </a></h3>
 
-有多种方法在 Rust 中编写 GUI 应用程序。查阅我们的[GUI 框架列表](https://github.com/kud1ing/awesome-rust#gui)吧。
+有多种方法在 Rust 中编写 GUI 应用程序。查阅我们的 [GUI 框架列表](https://github.com/kud1ing/awesome-rust#gui)吧。
 
 <h3><a href="#how-can-i-parse-json-xml" name="how-can-i-parse-json-xml">
 如何解析 JSON/XML？
