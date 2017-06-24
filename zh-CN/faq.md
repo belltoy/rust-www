@@ -1287,14 +1287,14 @@ Rust 是否允许全局的非常量表达式值？
 反方向转换，可以通过 `match` 语句，将不同的数值映射到枚举的不同潜在值。
 
 <h3><a href="#why-do-rust-programs-use-more-memory-than-c" name="why-do-rust-programs-use-more-memory-than-c">
-为什么 Rust 程序使用比 C 更多的内存？
+为什么 Rust 程序的二进制文件比 C 程序要大？
 </a></h3>
 
-There are several factors that contribute to Rust programs having, by default, larger binary sizes than functionally-equivalent C programs. In general, Rust's preference is to optimize for the performance of real-world programs, not the size of small programs.
+在默认情况下，Rust 程序比功能相当的 C 程序有更大的二进制大小，有几个因素。一般来说， Rust 倾向于为实现世界的性能做优化，而不是程序的大小。
 
-__Monomorphization__
+__单态化（Monomorphization）__
 
-Rust monomorphizes generics, meaning that a new version of a generic function or type is generated for each concrete type it's used with in the program. This is similar to how templates work in C++. For example, in the following program:
+Rust 的单态化泛型，意味着为程序中使用的每个具体类型生成一个通用函数或者类型的新版本。这与 C++ 中模板的工作方式类似。例如，在以下程序中：
 
 ```rust
 fn foo<T>(t: T) {
@@ -1307,25 +1307,25 @@ fn main() {
 }
 ```
 
-Two distinct versions of `foo` will be in the final binary, one specialized to an `i32` input, one specialized to a `&str` input. This enables efficient static dispatch of the generic function, but at the cost of a larger binary.
+在最终的二进制文件中会有两个不同版本的 `foo`，一个专门用于接收 `i32` 的输入，一个专门用于接收 `&str` 的输入。这样实现了通用函数的高效静态调度（dispatch），但代价是会产生较大的二进制文件。
 
 __调试符号__
 
-Rust programs compile with some debug symbols retained, even when compiling in release mode. These are used for providing backtraces on panics, and can be removed with `strip`, or another debug symbol removal tool. It is also useful to note that compiling in release mode with Cargo is equivalent to setting optimization level 3 with rustc. An alternative optimization level (called `s` or `z`) [has recently landed](https://github.com/rust-lang/rust/pull/32386) and tells the compiler to optimize for size rather than performance.
+Rust 程序在编译的时候保留了一些调试符号，即使在 release 模式下编译也是如此。这是用于在 panic 的时候提供回溯（backtrace）的功能，可以用 `strip` 或者其它调试符号删除工具进行删除。还有一点值得注意的是，在 Cargo 的 release 模式下进行编译等同于用 rustc 设置优化级别为 3。一个替代的优化级别（称为 `s` 或 `z`）[最近被引入](https://github.com/rust-lang/rust/pull/32386)，用于告诉编译器针对大小而不是性能进行优化。
 
 __Jemalloc__
 
-Rust uses jemalloc as the default allocator, which adds some size to compiled Rust binaries. Jemalloc is chosen because it is a consistent, quality allocator that has preferable performance characteristics compared to a number of common system-provided allocators. There is work being done to [make it easier to use custom allocators](https://github.com/rust-lang/rust/issues/32838), but that work is not yet finished.
+Rust 使用 jemalloc 作为默认内存分配器，这会增加一些编译后的二进制文件的大小。选择 jemalloc 是因为它是一个一致的，优质的内存分配器，与许多常见的系统提供的分配器相比具有优越的性能特征。[为了更容易地使用自定义的分配器](https://github.com/rust-lang/rust/issues/32838)，有一项工作正在进行，但尚未完成。
 
-__链接时优化__
+__链接时（link-time）优化__
 
-Rust does not do link-time optimization by default, but can be instructed to do so. This increases the amount of optimization that the Rust compiler can potentially do, and can have a small effect on binary size. This effect is likely larger in combination with the previously mentioned size optimizing mode.
+Rust 在默认情况下不提供链接时优化，但可以指定这么做。这增加了 Rust 编译器可能会执行的优化量，对二进制文件产生很小的影响。与之前提到的文件大小优化模式相结合，效果会更好。
 
 __标准库__
 
-The Rust standard library includes libbacktrace and libunwind, which may be undesirable in some programs. Using `#![no_std]` can thus result in smaller binaries, but will also usually result in substantial changes to the sort of Rust code you're writing. Note that using Rust without the standard library is often functionally closer to the equivalent C code.
+Rust 标准库包括 libbacktrace 和 libunwind，这在某些程序中可能用不到。因此，使用 `#![no_std]` 可以产生更小的二进制文件，但通常也会导致你编写的代码需要大量的修改。请注意，使用不带标准库的 Rust 通常在功能上更接近等效的 C 代码。
 
-作为一个例子，下列 C 程序读入一个名称，并向该名称的人说「Hello」。
+例如，以下 C 程序读入一个名字，然后输出向该名字的人的问好 「hello」。
 
 ```c
 #include <stdio.h>
@@ -1339,7 +1339,7 @@ int main(void) {
 }
 ```
 
-将这用 Rust 重写，您可能得到这样的内容：
+用 Rust 重写，你可能得到如下的内容：
 
 ```rust
 use std::io;
@@ -1352,7 +1352,7 @@ fn main() {
 }
 ```
 
-This program, when compiled and compared against the C program, will have a larger binary and use more memory. But this program is not exactly equivalent to the above C code. The equivalent Rust code would instead look something like this:
+该程序编译之后与 C 程序相比，具有更大的二进制文件且使用更多的内存。但是该程序并不完全等同于上面的 C 代码。相反，等效的 Rust 代码看起来像这样：
 
 ```rust
 #![feature(lang_items)]
@@ -1384,15 +1384,15 @@ fn start(_argc: isize, _argv: *const *const u8) -> isize {
 #[lang="stack_exhausted"] extern fn stack_exhausted() {}
 ```
 
-Which should indeed roughly match C in memory usage, at the expense of more programmer complexity, and a lack of static guarantees usually provided by Rust (avoided here with the use of `unsafe`).
+这样在内存的使用上就应该大致与 C 相当了，但代价是需要程序员更多的编程技巧，而且缺少了 Rust 通常提供的静态保证（由于这里 `unsafe` 的使用）。
 
 <h3><a href="#why-no-stable-abi" name="why-no-stable-abi">
 为什么 Rust 没有像 C 一样稳定的 ABI，以及为什么必须用 extern 来标注？
 </a></h3>
 
-Committing to an ABI is a big decision that can limit potentially advantageous language changes in the future. Given that Rust only hit 1.0 in May of 2015, it is still too early to make a commitment as big as a stable ABI. This does not mean that one won't happen in the future, though. (Though C++ has managed to go for many years without specifying a stable ABI.)
+承诺一个 ABI 是一个很重大的决定，这会限制语言在将来潜在的有利改进。鉴于 Rust 在 2015 年 5 朋才达到 1.0，拟作出一个像稳定 ABI 这样的大承诺还为时过早。但这并不意味着将来不会有。（虽然 C++ 已经设法发展了很多年，但并没有指定一个稳定的 ABI。）
 
-The `extern` keyword allows Rust to use specific ABI's, such as the well-defined C ABI, for interop with other languages.
+`extern` 关键字允许 Rust 使用一些特定的 ABI，例如明确定义的 C ABI，来与其它语言交互。
 
 <h3><a href="#can-rust-code-call-c-code" name="can-rust-code-call-c-code">
 Rust 代码能调用 C 代码吗？
