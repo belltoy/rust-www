@@ -330,60 +330,57 @@ match val.do_something() {
 <h2 id="numerics">数字</h2>
 
 <h3><a href="#which-type-of-float-should-i-use" name="which-type-of-float-should-i-use">
-Which of <code>f32</code> and <code>f64</code> should I prefer for floating-point math?
+在浮点运算中我该用 <code>f32</code> 还是 <code>f64</code>？
 </a></h3>
 
-The choice of which to use is dependent on the purpose of the program.
+对于这两者的选择取决于程序的目的。
 
-If you are interested in the greatest degree of precision with your floating point numbers, then prefer [`f64`][f64]. If you are more interested in keeping the size of the value small or being maximally efficient, and are not concerned about the associated inaccuracy of having fewer bits per value, then [`f32`][f32] is better. Operations on [`f32`][f32] are usually faster, even on 64-bit hardware. As a common example, graphics programming typically uses [`f32`][f32] because it requires high performance, and 32-bit floats are sufficient for representing pixels on the screen.
+如果你对浮点数的最大精度感兴趣，那么更倾向于选择 [`f64`][f64]。如果你更注重于保持数值占用更小的空间，或者更高的效率，而不关心每个数值具有较少的位而失去一些精确性，则选择 [`f32`][f32] 会更好。在 [`f32`][f32] 上的操作通常更快，即使在 64 位的硬件上也是如此。作为一个常见的例子，图形编程通常使用 [`f32`][f32] 因为它需要更高的性能，而且 32 位浮点数足以表示屏幕上的像素。
 
-If in doubt, choose [`f64`][f64] for the greater precision.
+如果有疑问，请选择 [`f64`][f64] 以获得更高的精度。
 
 <h3><a href="#why-cant-i-compare-floats" name="why-cant-i-compare-floats">
-Why can't I compare floats or use them as <code>HashMap</code> or <code>BTreeMap</code> keys?
+为什么我不能比较浮点数，或者把它们作为 <code>HashMap</code> 或 <code>BTreeMap</code> 的键？
 </a></h3>
 
-Floats can be compared with the `==`, `!=`, `<`, `<=`, `>`, and `>=` operators, and with the `partial_cmp()` function. `==` and `!=` are part of the [`PartialEq`][PartialEq] trait, while `<`, `<=`, `>`, `>=`, and `partial_cmp()` are part of the [`PartialOrd`][PartialOrd] trait.
+浮点数可以用操作符 `==`，`!=`，`<`，`<=`，`>`，`>=`，以及函数 `partial_cmp()` 进行比较。`==` 和 `!=` 是 [`PartialEq`][PartialEq] trait 的一部分，而 `<`，`<=`，`>`，`>=`，以及 `partial_cmp()` 是 [`PartialOrd`][PartialOrd] trait 的一部分。
 
-Floats cannot be compared with the `cmp()` function, which is part of the [`Ord`][Ord] trait, as there is no total ordering for floats. Furthermore, there is no total equality relation for floats, and so they also do not implement the [`Eq`][Eq] trait.
+浮点数不能用 `cmp()` 函数进行比较，它是 [`Ord`][Ord] trait 的一部分，因为浮点数不是全序的。此外，浮点数也不是完全等价的，所以它们没有实现 [`Eq`][Eq] trait。
 
-There is no total ordering or equality on floats because the floating-point value [`NaN`](https://en.wikipedia.org/wiki/NaN) is not less than, greater than, or equal to any other floating-point value or itself.
+浮点数不是全序或等价的，因为浮点值 [`NaN`](https://en.wikipedia.org/wiki/NaN) 既不小于，也不大于，或者等于其它任何浮点数或者自身。
 
-Because floats do not implement [`Eq`][Eq] or [`Ord`][Ord], they may not be used in types whose trait bounds require those traits, such as [`BTreeMap`][BTreeMap] or [`HashMap`][HashMap]. This is important because these types *assume* their keys provide a total ordering or total equality relation, and will malfunction otherwise.
+因为浮点数没有实现 [`Eq`][Eq] 或 [`Ord`][Ord]，它们不能用于 trait 约束要求是这些 trait 的地方，例如 [`BTreeMap`][BTreeMap] 或 [`HashMap`][HashMap]。这很重要，因为这些类型*假设*它们的键提供一个全序或完全等价的关系，否则将失败。
 
-There [is a crate](https://crates.io/crates/ordered-float) that wraps [`f32`][f32] and [`f64`][f64] to provide [`Ord`][Ord] and [`Eq`][Eq] implementations, which may be useful in certain cases.
+有一个[包](https://crates.io/crates/ordered-float)提供了对 [`f32`][f32] 和 [`f64`][f64] 的 [`Ord`][Ord] 和 [`Eq`][Eq] 的实现的封装，可能在某些情况下会有用。
 
 <h3><a href="#how-can-i-convert-between-numeric-types" name="how-can-i-convert-between-numeric-types">
 如何在数字类型间进行转换？
 </a></h3>
 
-There are two ways: the `as` keyword, which does simple casting for primitive types, and the [`Into`][Into] and [`From`][From] traits, which are implemented for a number of type conversions (and which you can implement for your own types). The [`Into`][Into] and [`From`][From] traits are only implemented in cases where conversions are lossless, so for example, `f64::from(0f32)` will compile while `f32::from(0f64)` will not. On the other hand, `as` will convert between any two primitive types, truncating values as necessary.
-
+有两种方法：一种是 `as` 关键字，它用于原生类型的简单转换，另一种是 [`Into`][Into] 和 [`From`][From] trait，用于实现多种类型的转换（也可以用于你自己定义的类型）。[`Into`][Into] 和 [`From`][From] trait 仅用于无损转换的情况，所以例如 `f64::from(0f32)` 可以成功编译而 `f32::from(0f64)` 则不行。另一方面，`as` 可以用于任意两种原生类型的转换，并根据需要进行截断。
 
 <h3><a href="#why-doesnt-rust-have-increment-and-decrement-operators" name="why-doesnt-rust-have-increment-and-decrement-operators">
-Why doesn't Rust have increment and decrement operators?
+为什么 Rust 没有递增或递减操作符？
 </a></h3>
 
-Preincrement and postincrement (and the decrement equivalents), while convenient, are also fairly complex. They require knowledge of evaluation order, and often lead to subtle bugs and undefined behavior in C and C++. `x = x + 1` or `x += 1` is only slightly longer, but unambiguous.
-
+先增和后增（以及相对就的减法）虽然方便，但也相当复杂。它们都要求要对运算顺序的了解，而且经常导致 C 和 C++ 中的细节错误和未定义的行为。 `x = x + 1` 或 `x += 1` 只是略长一点，但更加明确。
 <h2 id="strings">字符串</h2>
 
 <h3><a href="#how-to-convert-string-or-vec-to-slice" name="how-to-convert-string-or-vec-to-slice">
-How can I convert a <code>String</code> or <code>Vec&lt;T&gt;</code> to a slice (<code>&amp;str</code> and <code>&amp;[T]</code>)?
+如果将 <code>String</code> 或 <code>Vec&lt;T&gt;</code> 转换成切片（<code>&amp;str</code> 和 <code>&amp;[T]</code>）？
 </a></h3>
 
-Usually, you can pass a reference to a `String` or `Vec<T>` wherever a slice is expected.
-Using [Deref coercions](https://doc.rust-lang.org/stable/book/deref-coercions.html), [`String`s][String] and [`Vec`s][Vec] will automatically coerce to their respective slices when passed by reference with `&` or `& mut`.
+通常，你可以在需要切片的地方转入 `String` 或 `Vec<T>`。使用[强制解引（Deref）](https://doc.rust-lang.org/stable/book/deref-coercions.html)，在用 `&` 或 `&mut` 传递引用时，[`String`][String] 和 [`Vec`][Vec] 会自动强制转换为对应的切片。
 
-Methods implemented on `&str` and `&[T]` can be accessed directly on `String` and `Vec<T>`. For example, `some_string.char_at(0)` will work even though `char_at` is a method on `&str` and `some_string` is a `String`.
+在 `&str` 和 `&[T]` 上实现的方法可以直接在 `String` 和 `Vec<T>` 上访问。例如，即使 `char_at` 是 `&str` 上的方法，而 `some_string` 是一个 `String`，`some_string.char_at(0)` 也可以运行。
 
-In some cases, such as generic code, it's necessary to convert manually. Manual conversions can be achieved using the slicing operator, like so: `&my_vec[..]`.
+在某些情况下，例如泛型代码，需要手动转换。可以用切片操作符实现手动转换，如：`&my_vec[..]`。
 
 <h3><a href="#how-to-convert-between-str-and-string" name="how-to-convert-between-str-and-string">
-How can I convert from <code>&amp;str</code> to <code>String</code> or the other way around?
+如何将 <code>&amp;str</code> 转换为 <code>String</code>，或者反向转换？
 </a></h3>
 
-The [`to_string()`][to_string] method converts from a [`&str`][str] into a [`String`][String], and [`String`s][String] are automatically converted into [`&str`][str] when you borrow a reference to them. Both are demonstrated in the following example:
+[`to_string()`][to_string] 方法将 [`&str`][str] 转换为 [`String`][String]，当你借用一个 [`String`][String] 的引用时，它会自动转换成 [`&str`][str]。两者都在以下示例中演示：
 
 ```rust
 fn main() {
@@ -400,50 +397,50 @@ fn say_hello(name: &str) {
 两种不同的字符串类型有什么区别？
 </a></h3>
 
-[`String`][String] is an owned buffer of UTF-8 bytes allocated on the heap. Mutable [`String`s][String] can be modified, growing their capacity as needed. [`&str`][str] is a fixed-capacity "view" into a [`String`][String] allocated elsewhere, commonly on the heap, in the case of slices dereferenced from [`String`s][String], or in static memory, in the case of string literals.
+[`String`][String] 是一个被拥有（owned）的在堆上分配的 UTF-8 的字节缓冲区。可变 [`String`][String] 可以被修改，根据需要增加其容量。[`&str`][str] 是一个指向分配在某处的 [`String`][String] 的一个固定容量的「视图」。如果切片是在从 [`String`][String] 解引而来的，则通常是指向在堆上，如果是字符串字面值，则指向静态内存。
 
-[`&str`][str] is a primitive type implemented by the Rust language, while [`String`][String] is implemented in the standard library.
+[`&str`][str] 是一个由 Rust 语言实现的原生类型，而 [`String`][String] 则是由标准库实现的。
 
 <h3><a href="#how-do-i-do-o1-character-access-in-a-string" name="how-do-i-do-o1-character-access-in-a-string">
 如何以 O(1) 复杂度访问一个 <code>String</code> 中的字符？
 </a></h3>
 
-并不能这样做。At least not without a firm understanding of what you mean by "character", and preprocessing the string to find the index of the desired character.
+做不到。至少在缺少对你所说的「字符（character）」充分的理解，并且缺少用于查找所需字符的索引而对字符串的预处理的情况下，无法做到。
 
-Rust strings are UTF-8 encoded. A single visual character in UTF-8 is not necessarily a single byte as it would be in an ASCII-encoded string. Each byte is called a "code unit" (in UTF-16, code units are 2 bytes; in UTF-32 they are 4 bytes). "Code points" are composed of one or more code units, and combine in "grapheme clusters" which most closely approximate characters.
+Rust 字符串是用 UTF-8 编码的。UTF-8 中的单个可见字符不一定单个字节，除非它是用 ASCII 编码的字符串。每个字节被称为「码元（code unit）」（在 UTF-16 中，码元是 2 字节，在 UTF-32 中码元是 4 字节）。「码位（code point）」由一个或多个码元组成，并由此结合成「grapheme cluster」，这是最接近字符的概念了。
 
-Thus, even though you may index on bytes in a UTF-8 string, you can't access the `i`th code point or grapheme cluster in constant time. However, if you know at which byte that desired code point or grapheme cluster begins, then you _can_ access it in constant time. Functions including [`str::find()`][str__find] and regex matches return byte indices, facilitating this sort of access.
+因此，即使你可以在 UTF-8 字符串中索引字节，你也不能在常数时间里访问第 `i` 个码元或 grapheme cluster。但是，如果你知道所需的 code point 或 grapheme cluster 开始的字节的位置，那么你 _可以_ 在常数时间时访问它。包括 [`str::find()`][str__find] 和正则匹配函数都返回字节索引，以便于此类的访问。
 
 <h3><a href="#why-are-strings-utf-8" name="why-are-strings-utf-8">
 为什么字符串默认为 UTF-8？
 </a></h3>
 
-The [`str`][str] type is UTF-8 because we observe more text in the wild in this encoding – particularly in network transmissions, which are endian-agnostic – and we think it's best that the default treatment of I/O not involve having to recode codepoints in each direction.
+[`str`][str] 类型之所以是 UTF-8，是因为我们观察了许多实现中这种编码的文本 —— 尤其是在与字节顺序无关的网络传输中 —— 我们认为 I/O 的默认处理无需牵涉到对码位的双向重编码是最好的选择。
 
-This does mean that locating a particular Unicode codepoint inside a string is an O(n) operation, although if the starting byte index is already known then they can be accessed in O(1) as expected. On the one hand, this is clearly undesirable; on the other hand, this problem is full of trade-offs and we'd like to point out a few important qualifications:
+这意味着在一个字符串中的定位一个特定的 Unicode 码位是一个 O(n) 的操作，但是如果已经知道起始字节的索引，则可以按预期以 O(1) 访问。一方面，这显然是不可取的；另一方面，这个问题充满了权衡，我们要指出一些重要的限定：
 
-Scanning a [`str`][str] for ASCII-range codepoints can still be done safely byte-at-a-time. If you use [`.as_bytes()`][str__as_bytes], pulling out a [`u8`][u8] costs only `O(1)` and produces a value that can be cast and compared to an ASCII-range [`char`][char]. So if you're (say) line-breaking on `'\n'`, byte-based treatment still works. UTF-8 was well-designed this way.
+扫描一个 ASCII 范围的 [`str`][str] 仍然可以安全地依字节进行。如果你使用 [`.as_bytes()`][str__as_bytes]，取出一个 [`u8`][u8] 只需要消耗 `O(1)`，并生产一个可以与 ASCII 范围内的 [`char`][char] 相互转换和比较的值。所以如果你要在 `'\n'` 处换行，基于字节的处理依然可以运行。UTF-8 是用这种方式精心设计的。
 
-Most "character oriented" operations on text only work under very restricted language assumptions such as "ASCII-range codepoints only". Outside ASCII-range, you tend to have to use a complex (non-constant-time) algorithm for determining linguistic-unit (glyph, word, paragraph) boundaries anyway. We recommend using an "honest" linguistically-aware, Unicode-approved algorithm.
+大多数在文本上「面向字符」的操作只能在非常受限的语言假设前提下工作，例如「ASCII 范围内的码位」。在 ASCII 范围之外，你往往必须使用复杂的（非常数时间）算法来确定语言单位（字形，单词，段落）的边界。我们建议使用一个「可靠的」有语言感知的，经 Unicode 验证过的算法。
 
-The [`char`][char] type is UTF-32. If you are sure you need to do a codepoint-at-a-time algorithm, it's trivial to write a `type wstr = [char]`, and unpack a [`str`][str] into it in a single pass, then work with the `wstr`. In other words: the fact that the language is not "decoding to UTF32 by default" shouldn't stop you from decoding (or re-encoding any other way) if you need to work with that encoding.
+[`char`][char] 类型是 UTF-32 的。如果你确定需要一个依码位的算法，写一个 `type wstr = [char]`，将一个 [`str`][str] 放入其中，然后使用 `wstr`，这是很简单的。换句话说：实际上如果你需要用到该编码，编程语言不会「默认解码为 UTF32」的事实不应该阻止你解码（或用其它任何方式重新编码）。
 
-For a more in-depth explanation of why UTF-8 is usually preferable over UTF-16 or UTF-32, read the [UTF-8 Everywhere manifesto](http://utf8everywhere.org/).
+要更深入了解为什么 UTF-8 通常比 UTF-16 或 UTF-32 更好的解释，请阅读 [UTF-8 遍地开花宣言](http://utf8everywhere.org/)。
 
 <h3><a href="#what-string-type-should-i-use" name="what-string-type-should-i-use">
 我应该使用哪种字符串类型？
 </a></h3>
 
-Rust has four pairs of string types, [each serving a distinct purpose](http://www.suspectsemantics.com/blog/2016/03/27/string-types-in-rust/). In each pair, there is an "owned" string type, and a "slice" string type. The organization looks like this:
+Rust 拥有四种字符串类型，[每种都用于不同的目的](http://www.suspectsemantics.com/blog/2016/03/27/string-types-in-rust/)。在每一对中，都有一个「Owned」的字符串类型，和一个「切片」的字符串类型。组织起来像这样：
 
-|               | "Slice" 类型 | "Owned" 类型 |
-|:--------------|:-------------|:-------------|
-| UTF-8         | `str`        | `String`     |
-| OS 兼容        | `OsStr`      | `OsString`   |
-| C 兼容         | `CStr`       | `CString`    |
-| 系统路径       | `Path`       | `PathBuf`    |
+|               | 「Slice」类型 | 「Owned」类型 |
+|:--------------|:--------------|:--------------|
+| UTF-8         | `str`         | `String`      |
+| OS 兼容       | `OsStr`       | `OsString`    |
+| C 兼容        | `CStr`        | `CString`     |
+| 系统路径      | `Path`        | `PathBuf`     |
 
-Rust 的不同字符串类型适用于不同的目的。`String` 和 `str` 为 UTF-8 编码的通用目的字符串。`OsString` 和 `OsStr` 的编码取决于当前平台，在与操作系统交互时 使用。`CString` 和 `CStr` 是 Rust 中与 C 字符串相当的存在，用于 FFI 代码。`PathBuf` 和 `Path` 是 `OsString` 和 `OsStr` 的方便包装，提供特定路径操作的方法。
+Rust 的不同字符串类型适用于不同的目的。`String` 和 `str` 为 UTF-8 编码的通用目的字符串。`OsString` 和 `OsStr` 的编码取决于当前平台，在与操作系统交互时使用。`CString` 和 `CStr` 是 Rust 中与 C 字符串相当的存在，用于 FFI 代码。`PathBuf` 和 `Path` 是 `OsString` 和 `OsStr` 的方便封装，提供路径操作的特定方法。
 
 <h3><a href="#why-are-there-multiple-types-of-strings" name="why-are-there-multiple-types-of-strings">
 怎样写一个同时接受 <code>&str</code> 与 <code>String</code> 的函数？
@@ -451,13 +448,13 @@ Rust 的不同字符串类型适用于不同的目的。`String` 和 `str` 为 U
 
 有几种方法，具体取决于该函数的需求：
 
-- If the function needs an owned string, but wants to accept any type of string, use an `Into<String>` bound.
-- If the function needs a string slice, but wants to accept any type of string, use an `AsRef<str>` bound.
-- If the function does not care about the string type, and wants to handle the two possibilities uniformly, use `Cow<str>` as the input type.
+- 如果函数需要拥有一个字符串，又希望接受任何类型的字符串，请使用 `Into<String>` 约束。
+- 如果函数需要一个字符串切片，又希望接受任何类型的字符串，请使用 `AsRef<str>` 约束。
+- 如果函数不关心字符串类型，希望用统一的方式处理两种可能性，请使用 `Cow<str>` 作为输入类型。
 
 __使用 `Into<String>`__
 
-在此例中，the function will accept both owned strings and string slices, either doing nothing or converting the input into an owned string within the function body. Note that the conversion needs to be done explicitly, and will not happen otherwise.
+在此例中，该函数可以接受 owned 字符串和字符串切片作为参数，它要么不作任何处理，要么将输入转换为函数体内部拥有的字符串。请注意，转换需要显式调用，否则不会生效。
 
 ```rust
 fn accepts_both<S: Into<String>>(s: S) {
@@ -468,7 +465,7 @@ fn accepts_both<S: Into<String>>(s: S) {
 
 __使用 `AsRef<str>`__
 
-在此例中，the function will accept both owned strings and string slices, either doing nothing or converting the input into a string slice. This can be done automatically by taking the input by reference, like so:
+在此例中，该函数可以接受 owned 字符串和字符串切片作为参数，它要么不做任何处理，要么将输入转换为一个字符串切片。这里可以通过引用输入参数来自动完成，如下所示：
 
 ```rust
 fn accepts_both<S: AsRef<str>>(s: &S) {
@@ -478,7 +475,7 @@ fn accepts_both<S: AsRef<str>>(s: &S) {
 
 __使用 `Cow<str>`__
 
-在此例中，该函数采用一个 `Cow<str>`，它不是通用类型，而是一个容器，包含所需的字符串或字符串切片。
+在此例中，该函数接受一个 `Cow<str>`，它不是泛型类型，而是一个容器，包含一个 owned 字符串或字符串切片。
 
 ```rust
 fn accepts_cow(s: Cow<str>) {
@@ -490,20 +487,20 @@ fn accepts_cow(s: Cow<str>) {
 <h2 id="collections">集合</h2>
 
 <h3><a href="#can-i-implement-linked-lists-in-rust" name="can-i-implement-linked-lists-in-rust">
-可以在 Rust 中有效地实现向量和链表的数据结构吗？
+可以在 Rust 中高效地实现向量和链表的数据结构吗？
 </a></h3>
 
-If your reason for implementing these data structures is to use them for other programs, there's no need, as efficient implementations of these data structures are provided by the standard library.
+如果实现这些数据结构的原因是要将它们用于其它程序，则不需要，因为标准库已经提供了这些数据结构的高效实现。
 
-If, however, [your reason is simply to learn](http://cglab.ca/~abeinges/blah/too-many-lists/book/), then you will likely need to dip into unsafe code. While these data structures _can_ be implemented entirely in safe Rust, the performance is likely to be worse than it would be with the use of unsafe code. The simple reason for this is that data structures like vectors and linked lists rely on pointer and memory operations that are disallowed in safe Rust.
+但是，如果[你的目的只是为了学习](http://cglab.ca/~abeinges/blah/too-many-lists/book/)，那么你可能需要深入学习 unsafe 代码。虽然这些数据结构可以完全在安全的 Rust 中实现，但性能可能会比使用 unsafe 代码更差。简单来说原因是如向量和链表这样的数据结构依赖于指针和内存操作，而这些在安全的 Rust 中是不允许的。
 
-例如，a doubly-linked list requires that there be two mutable references to each node, but this violates Rust's mutable reference aliasing rules. You can solve this using [`Weak<T>`][Weak], but the performance will be poorer than you likely want. With unsafe code you can bypass the mutable reference aliasing rule restriction, but must manually verify that your code introduces no memory safety violations.
+例如，双向链表需要每个节点有两个可变引用，但这违反了 Rust 的可变引用规则。你可以用 [`Weak<T>`][Weak] 解决这个问题，但性能会比你想的要差。使用 unsafe 代码，你可以绕过可变引用规则的限制，但必须自行验证你引入的代码不会违反内存安全。
 
 <h3><a href="#how-can-i-iterate-over-a-collection-without-consuming-it" name="how-can-i-iterate-over-a-collection-without-consuming-it">
 如何在不移动/消费的情况下迭代集合？
 </a></h3>
 
-The easiest way is by using the collection's [`IntoIterator`][IntoIterator] implementation. Here is an example for [`&Vec`][Vec]:
+最简单的方法是使用集合的 [`IntoIterator`][IntoIterator] 实现。这里有一个 [`&Vec`][Vec] 的例子：
 
 ```rust
 let v = vec![1,2,3,4,5];
@@ -513,21 +510,21 @@ for item in &v {
 println!("\nLength: {}", v.len());
 ```
 
-Rust `for` 循环调用 `into_iter()` (defined on the [`IntoIterator`][IntoIterator] trait) for whatever they're iterating over. Anything implementing the [`IntoIterator`][IntoIterator] trait may be looped over with a `for` loop. [`IntoIterator`][IntoIterator] is implemented for [`&Vec`][Vec] and [`&mut Vec`][Vec], causing the iterator from `into_iter()` to borrow the contents of the collection, rather than moving/consuming them. The same is true for other standard collections as well.
+Rust 的 `for` 循环对于任何迭代都调用 `into_iter()`（在[`IntoIterator`][IntoIterator] trait 中定义）。任何实现了 [`IntoIterator`][IntoIterator] trait 的类型都可以用在 `for` 循环中。 [`IntoIterator`][IntoIterator] 是对针 [`&Vec`][Vec] 和 [`&mut Vec`][Vec] 实现的，所以 `into_iter()` 返回的迭代器只是借用集合的内容，而不是移动/消费它们。其它标准集合也是如此。
 
-如果需要移动/消费迭代器，在迭代中撰写没有 `&` 或 `&mut` 的 `for`。
+如果需要移动/消费迭代器，在迭代中用没有 `&` 或 `&mut` 的 `for`。
 
-如果您需要直接访问一个借用的迭代器，您通常可以调用 `iter()` 方法来获取它。
+如果你需要直接访问一个借用的迭代器，你通常可以调用 `iter()` 方法来获取它。
 
 <h3><a href="#why-do-i-need-to-type-the-array-size-in-the-array-declaration" name="why-do-i-need-to-type-the-array-size-in-the-array-declaration">
-为什么需要在数组声明中键入数组大小？
+为什么需要在数组声明中输入数组大小？
 </a></h3>
 
-You don't necessarily have to. If you're declaring an array directly, the size is inferred based on the number of elements. But if you're declaring a function that takes a fixed-size array, the compiler has to know how big that array will be.
+不一定要。如果你直接声明数组，数组大小会根据元素的数量来推断。但是如果你声明一个固定大小的数组，那么编译器就需要知道该数组的大小。
 
-One thing to note is that currently Rust doesn't offer generics over arrays of different size. If you'd like to accept a contiguous container of a variable number of values, use a [`Vec`][Vec] or slice (depending on whether you need ownership).
+需要注意的是，目前 Rust 并没有提供针对不同大小数组的泛型。如果你想接受可变数值的连续容器，请使用 [`Vec`][Vec] 或切片（视是否需要所有权而定）。
 
-<h2 id="ownership">Ownership</h2>
+<h2 id="ownership">所有权</h2>
 
 <h3><a href="#how-can-i-implement-a-data-structure-that-contains-cycles" name="how-can-i-implement-a-data-structure-that-contains-cycles">
 如何实现包含循环的图或其他数据结构？
@@ -1231,7 +1228,7 @@ Rust 中可以用 `const` 声明在编译时计算的全局常量，而 `static`
 如何设置程序定义的编译时的常量？
 </a></h3>
 
-Rust 目前对编译时常量的支持有限。您可以使用 `const` 声明（类似 `static`，但它不可变，并且在内存中没有特定位置）定义原始类型，以及定义 `const` 函数和固有方法。
+Rust 目前对编译时常量的支持有限。您可以使用 `const` 声明（类似 `static`，但它不可变，并且在内存中没有特定位置）定义原生类型，以及定义 `const` 函数和固有方法。
 
 要定义那些无法通过这种机制定义的过程常量，使用 [`lazy-static`](https://github.com/rust-lang-nursery/lazy-static.rs) crate，它通过第一次使用的时候自动求值来模拟编译时求值。
 
